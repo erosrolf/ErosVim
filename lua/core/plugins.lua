@@ -1,3 +1,6 @@
 require("plugins.treesitter")
 require("plugins.telescope")
 require("plugins.comment")
+require("plugins.lsp")
+require("plugins.ui")
+require("plugins.cmp")

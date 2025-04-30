@@ -10,3 +10,27 @@
 [submodule "pack/my-plugins/start/plenary.nvim"]
 	path = pack/my-plugins/start/plenary.nvim
 	url = https://github.com/nvim-lua/plenary.nvim
+[submodule "pack/my-plugins/start/nvim-lspconfig"]
+	path = pack/my-plugins/start/nvim-lspconfig
+	url = https://github.com/neovim/nvim-lspconfig
+[submodule "pack/my-plugins/start/nvim-cmp"]
+	path = pack/my-plugins/start/nvim-cmp
+	url = https://github.com/hrsh7th/nvim-cmp
+[submodule "pack/my-plugins/start/cmp-nvim-lsp"]
+	path = pack/my-plugins/start/cmp-nvim-lsp
+	url = https://github.com/hrsh7th/cmp-nvim-lsp
+[submodule "pack/my-plugins/start/cmp-buffer"]
+	path = pack/my-plugins/start/cmp-buffer
+	url = https://github.com/hrsh7th/cmp-buffer
+[submodule "pack/my-plugins/start/cmp-path"]
+	path = pack/my-plugins/start/cmp-path
+	url = https://github.com/hrsh7th/cmp-path
+[submodule "pack/my-plugins/start/cmp-cmdline"]
+	path = pack/my-plugins/start/cmp-cmdline
+	url = https://github.com/hrsh7th/cmp-cmdline
+[submodule "pack/my-plugins/start/dressing.nvim"]
+	path = pack/my-plugins/start/dressing.nvim
+	url = https://github.com/stevearc/dressing.nvim
+[submodule "pack/my-plugins/start/telescope-file-browser.nvim"]
+	path = pack/my-plugins/start/telescope-file-browser.nvim
+	url = https://github.com/nvim-telescope/telescope-file-browser.nvim

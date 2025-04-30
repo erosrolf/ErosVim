@@ -1,10 +1,30 @@
 vim.g.mapleader = " "
 
 local keymap = vim.keymap.set
+local telescope = require("telescope")
+local fb = telescope.extensions.file_browser
 local builtin = require("telescope.builtin")
 
+keymap("n", "<leader>e", fb.file_browser, { desc = "File browser" })
+
 keymap("n", "<leader>w", ":w<CR>")
-keymap("n", "<leader>q", ":q<CR>")
+
+vim.keymap.set('n', '<leader>q', function()
+  if vim.bo.modified then
+    vim.ui.select({ "Выйти без сохранения", "Сохранить и выйти", "Отмена" }, {
+      prompt = "Файл изменён. Что сделать?",
+    }, function(choice)
+      if choice == "Сохранить и выйти" then
+        vim.cmd("wq")
+      elseif choice == "Выйти без сохранения" then
+        vim.cmd("q!")
+      end
+      -- если "Отмена" — ничего не делаем
+    end)
+  else
+    vim.cmd("q")
+  end
+end, { desc = "Умный выход" })
 
 keymap("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
 keymap("n", "<leader>fw", builtin.live_grep, { desc = "Live grep" })
