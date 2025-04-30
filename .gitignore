@@ -1,0 +1,6 @@
+# Ignore backup/swap/undo files
+*.swp
+*.swo
+*.bak
+*.tmp
+.undodir/
