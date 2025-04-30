@@ -5,7 +5,15 @@ local telescope = require("telescope")
 local fb = telescope.extensions.file_browser
 local builtin = require("telescope.builtin")
 
-keymap("n", "<leader>e", fb.file_browser, { desc = "File browser" })
+-- открыть легковестный браузер
+vim.keymap.set("n", "<leader>e", function()
+  require("mini.files").open(vim.loop.cwd(), true)
+end, { desc = "Mini Files" })
+
+-- открыть детальный браузер
+keymap("n", "<leader>fb", function()
+  require("telescope").extensions.file_browser.file_browser()
+end, { desc = "File browser (detailed)" })
 
 keymap("n", "<leader>w", ":w<CR>")
 

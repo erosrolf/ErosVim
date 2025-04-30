@@ -34,3 +34,6 @@
 [submodule "pack/my-plugins/start/telescope-file-browser.nvim"]
 	path = pack/my-plugins/start/telescope-file-browser.nvim
 	url = https://github.com/nvim-telescope/telescope-file-browser.nvim
+[submodule "pack/my-plugins/start/mini.files"]
+	path = pack/my-plugins/start/mini.files
+	url = https://github.com/echasnovski/mini.files
