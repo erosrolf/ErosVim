@@ -1,0 +1,9 @@
+[submodule "pack/my-plugins/start/nvim-treesitter"]
+	path = pack/my-plugins/start/nvim-treesitter
+	url = https://github.com/nvim-treesitter/nvim-treesitter
+[submodule "pack/my-plugins/start/telescope.nvim"]
+	path = pack/my-plugins/start/telescope.nvim
+	url = https://github.com/nvim-telescope/telescope.nvim
+[submodule "pack/my-plugins/start/Comment.nvim"]
+	path = pack/my-plugins/start/Comment.nvim
+	url = https://github.com/numToStr/Comment.nvim
