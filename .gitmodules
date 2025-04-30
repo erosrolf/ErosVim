@@ -7,3 +7,6 @@
 [submodule "pack/my-plugins/start/Comment.nvim"]
 	path = pack/my-plugins/start/Comment.nvim
 	url = https://github.com/numToStr/Comment.nvim
+[submodule "pack/my-plugins/start/plenary.nvim"]
+	path = pack/my-plugins/start/plenary.nvim
+	url = https://github.com/nvim-lua/plenary.nvim
