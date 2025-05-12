@@ -70,3 +70,33 @@
 [submodule "pack/my-plugins/start/diffview.nvim"]
 	path = pack/my-plugins/start/diffview.nvim
 	url = https://github.com/sindrets/diffview.nvim
+[submodule "pack/my-plugins/start/mini.icons"]
+	path = pack/my-plugins/start/mini.icons
+	url = https://github.com/echasnovski/mini.icons
+[submodule "pack/my-plugins/start/minimap.vim"]
+	path = pack/my-plugins/start/minimap.vim
+	url = https://github.com/wfxr/minimap.vim
+[submodule "pack/my-plugins/start/aerial.nvim"]
+	path = pack/my-plugins/start/aerial.nvim
+	url = https://github.com/stevearc/aerial.nvim
+[submodule "pack/my-plugins/start/trouble.nvim"]
+	path = pack/my-plugins/start/trouble.nvim
+	url = https://github.com/folke/trouble.nvim
+[submodule "pack/my-plugins/start/neotest"]
+	path = pack/my-plugins/start/neotest
+	url = https://github.com/nvim-neotest/neotest.git
+[submodule "pack/my-plugins/start/neotest-gtest"]
+	path = pack/my-plugins/start/neotest-gtest
+	url = https://github.com/alfaix/neotest-gtest.git
+[submodule "pack/my-plugins/start/nvim-nio"]
+	path = pack/my-plugins/start/nvim-nio
+	url = https://github.com/nvim-neotest/nvim-nio.git
+[submodule "pack/my-plugins/start/telescope-live-grep-args.nvim"]
+	path = pack/my-plugins/start/telescope-live-grep-args.nvim
+	url = https://github.com/nvim-telescope/telescope-live-grep-args.nvim
+[submodule "pack/my-plugins/start/neo-tree.nvim"]
+	path = pack/my-plugins/start/neo-tree.nvim
+	url = https://github.com/nvim-neo-tree/neo-tree.nvim.git
+[submodule "pack/my-plugins/start/nui.nvim"]
+	path = pack/my-plugins/start/nui.nvim
+	url = https://github.com/MunifTanjim/nui.nvim.git

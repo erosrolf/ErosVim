@@ -4,6 +4,7 @@ local telescope  = require("telescope")
 local builtin    = require("telescope.builtin")
 local fb         = telescope.extensions.file_browser
 local map        = vim.keymap.set
+local func       = require("core.functions")
 
 local M = {
   { ----- code_action -----
@@ -20,6 +21,16 @@ local M = {
     "Format file"
   },
 
+  ------ diagnostics ------
+  -- Trouble.nvim v2 mappings
+  { "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", "Diagnostics (workspace)" },
+  { "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", "Diagnostics (current buffer)" },
+  { "<leader>xr", "<cmd>Trouble lsp toggle<cr>", "LSP (defs/refs/impl/...)" },
+  { "<leader>xs", "<cmd>Trouble symbols toggle pinned=true win.position=bottom<cr>", "Symbols (right)" },
+  { "<leader>xq", "<cmd>Trouble qflist toggle<cr>", "Quickfix list" },
+  { "<leader>xl", "<cmd>Trouble loclist toggle<cr>", "Location list" },
+
+  { "<leader>rn", vim.lsp.buf.rename, "Rename symbol" },
 
   ----- GIT ------
   {
@@ -35,31 +46,47 @@ local M = {
     end,
     "Toggle Git Diffview"
   },
+  { "<leader>gd", func.preview_hunk_popup, "Show Git hunk under cursor" },
+  { "<leader>gu", function() require("gitsigns").reset_hunk() end, "Undo Git hunk" },
+
+  { ----- goto_menu ------
+    "<leader>go",
+    func.goto_menu,
+    "Go to (definition, ref, ...)"
+  },
+
     ------ gitsigns (hunks) ------
   { "<leader>gp", function() require("gitsigns").preview_hunk() end, "Preview hunk" },
   { "<leader>gr", function() require("gitsigns").reset_hunk() end, "Reset hunk" },
   { "<leader>gb", function() require("gitsigns").blame_line({ full = true }) end, "Blame line" },
 
-  { ------ fine files ------
-    "<leader>ff",
-    builtin.find_files,
-    "Find files"
-  },
-  { ------ find word ------
-    "<leader>fw", 
-    builtin.live_grep,                           
-    "Find word"
-  },
+  ------ telescope ------
+  { "<leader>ff", builtin.find_files, "Find files" },
+  { "<leader>fw", telescope.extensions.live_grep_args.live_grep_args, "Find word" },
   { ------ file browser ------
     "<leader>fb", 
     fb.file_browser,                             
     "File browser"
   },
+
+  ------ explorer ------
+  { "<leader>e", "<cmd>Neotree toggle<CR>", "Toggle explorer" },
+
   { ------ mini files ------
-    "<leader>e", 
-    function() require("mini.files").open(vim.fn.expand("%:p:h"), true) end,
-    "Mini Files" 
+    "<leader>mf",
+    function()
+      local path = vim.fn.expand("%:p")
+      local stat = vim.loop.fs_stat(path)
+      local cwd = (stat and stat.type == "file")
+        and vim.fn.fnamemodify(path, ":h")
+        or vim.loop.cwd()
+
+      require("mini.files").open(cwd, true)
+    end,
+    "Mini Files"
   },
+  ------ aerial toggle outline ------
+  { "<leader>ot", "<cmd>AerialToggle<CR>", "Toggle Aerial Outline" },
   { ------ switch header/source ------
     "<leader>/", 
     "<cmd>ClangdSwitchSourceHeader<CR>",
@@ -101,28 +128,16 @@ local M = {
     "Close others buffers"
   },
   { ------ save buffer ------
-    "<leader>w",
-    "<cmd>w<CR>",
-    "Save buffer"
+    "<leader>w", 
+    function()
+      vim.lsp.buf.format({ async = false })
+     vim.cmd("write")
+    end,
+    "Format & Save"
   },
   { ------ smart close -------
     "<leader>q",
-    function()
-      local modified  = vim.bo.modified
-      local bufs      = #vim.fn.getbufinfo({ buflisted = 1 })
-      local function close(force)
-        vim.cmd((bufs<=1) and (force and "q!" or "confirm q")
-                           or (force and "bdelete!" or "bdelete"))
-      end
-      if not modified then close(false) return end
-      vim.ui.select({ "Выйти без сохранения", "Сохранить и закрыть", "Отмена" },
-        { prompt = "Буфер изменён. Что сделать?" },
-        function(choice)
-          if choice=="Сохранить и закрыть" then vim.cmd("write") close(false)
-          elseif choice=="Выйти без сохранения" then close(true)
-          end
-        end)
-    end,
+    func.smart_close_buffer,
     "Smart close"
   },
 }

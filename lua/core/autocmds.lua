@@ -1,3 +1,16 @@
+----- auto show diagnostic window -----
+vim.api.nvim_create_autocmd("CursorHold", {
+  callback = function()
+    vim.diagnostic.open_float(nil, {
+      focus = false,
+      border = "rounded",
+      source = "always",
+      prefix = "👁 ",
+    })
+  end,
+})
+
+----- oldfiles on open empty nvim ------
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
     if vim.fn.argc() == 0 then
@@ -5,6 +18,8 @@ vim.api.nvim_create_autocmd("VimEnter", {
     end
   end,
 })
+
+----- kill old swap file -----
 vim.api.nvim_create_autocmd("BufWritePost", {
   callback = function()
     local filename = vim.fn.expand("%:p")
