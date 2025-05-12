@@ -10,15 +10,6 @@ vim.api.nvim_create_autocmd("CursorHold", {
   end,
 })
 
------ oldfiles on open empty nvim ------
-vim.api.nvim_create_autocmd("VimEnter", {
-  callback = function()
-    if vim.fn.argc() == 0 then
-      require("telescope.builtin").oldfiles({ only_cwd = true })
-    end
-  end,
-})
-
 ----- kill old swap file -----
 vim.api.nvim_create_autocmd("BufWritePost", {
   callback = function()

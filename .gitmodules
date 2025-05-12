@@ -100,3 +100,9 @@
 [submodule "pack/my-plugins/start/nui.nvim"]
 	path = pack/my-plugins/start/nui.nvim
 	url = https://github.com/MunifTanjim/nui.nvim.git
+[submodule "pack/my-plugins/start/alpha-nvim"]
+	path = pack/my-plugins/start/alpha-nvim
+	url = https://github.com/goolord/alpha-nvim.git
+[submodule "pack/my-plugins/start/lualine.nvim"]
+	path = pack/my-plugins/start/lualine.nvim
+	url = https://github.com/nvim-lualine/lualine.nvim.git

@@ -27,6 +27,8 @@ require("plugins.miniicons")
 require("plugins.bufferline")
 require("plugins.mini_files")
 require("plugins.neo-tree")
+require("plugins.lualine")
+require("plugins.alpha")
 
 -- colorschemes
 require("plugins.catpuccin")
