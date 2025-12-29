@@ -94,9 +94,6 @@
 [submodule "config/pack/my-plugins/start/telescope-live-grep-args.nvim"]
 	path = config/pack/my-plugins/start/telescope-live-grep-args.nvim
 	url = https://github.com/nvim-telescope/telescope-live-grep-args.nvim
-[submodule "config/pack/my-plugins/start/neo-tree.nvim"]
-	path = config/pack/my-plugins/start/neo-tree.nvim
-	url = https://github.com/nvim-neo-tree/neo-tree.nvim.git
 [submodule "config/pack/my-plugins/start/nui.nvim"]
 	path = config/pack/my-plugins/start/nui.nvim
 	url = https://github.com/MunifTanjim/nui.nvim.git

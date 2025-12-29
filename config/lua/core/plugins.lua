@@ -1,35 +1,37 @@
-require("plugins.treesitter")
-require("plugins.comment")
-require("plugins.lsp")
-require("plugins.lsp_signature")
-require("plugins.cmp")
-require("plugins.nvim-navic")
-require("plugins.gitsigns")
-require("plugins.trouble")
+local function safe_require(name)
+  local ok, mod = pcall(require, name)
+  if not ok then
+    vim.schedule(function()
+      vim.notify(("Skipped missing module: %s"):format(name), vim.log.levels.WARN)
+    end)
+    return nil
+  end
+  return mod
+end
+
+safe_require("plugins.treesitter")
+safe_require("plugins.comment")
+safe_require("plugins.lsp")
+safe_require("plugins.lsp_signature")
+safe_require("plugins.cmp")
+safe_require("plugins.nvim-navic")
+safe_require("plugins.gitsigns")
+safe_require("plugins.trouble")
 
 -- telescope
-require("plugins.telescope")
-
--- notes and aerial
-require("plugins.aerial")
-require("plugins.notes").setup({
-  -- при желании можно изменить корень для заметок
-  notes_root = "~/obsidian/notes",
-})
+safe_require("plugins.telescope")
 
 -- tests
-require("plugins.neotest")
-require("plugins.neotest-gtest")
+safe_require("plugins.neotest")
+safe_require("plugins.neotest-gtest")
 
 -- ui
-require("plugins.ui")
-require("plugins.miniicons")
-require("plugins.bufferline")
-require("plugins.mini_files")
-require("plugins.neo-tree")
-require("plugins.lualine")
-require("plugins.alpha")
+safe_require("plugins.ui")
+safe_require("plugins.miniicons")
+safe_require("plugins.bufferline")
+safe_require("plugins.mini_files")
+safe_require("plugins.lualine")
 
 -- colorschemes
-require("plugins.catpuccin")
-require("plugins.github-nvim-theme")
+safe_require("plugins.catpuccin")
+safe_require("plugins.github-nvim-theme")
