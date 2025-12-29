@@ -1,4 +1,5 @@
 # Ignore backup/swap/undo files
+**/.DS_Store
 *.swp
 *.swo
 *.bak
