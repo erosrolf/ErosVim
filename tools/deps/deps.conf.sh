@@ -20,6 +20,11 @@ DEPS_LANG=(
   python3
 )
 
+# LSP servers
+DEPS_LSP=(
+  vscode-json-language-server
+)
+
 # OS-specific
 DEPS_MACOS=(
   # pbcopy/pbpaste обычно уже есть, но можно проверять по желанию
@@ -35,6 +40,7 @@ DEPS_ENABLED_GROUPS=(
   DEPS_COMMON
   DEPS_SEARCH
   DEPS_LANG
+  DEPS_LSP
   # DEPS_LINUX / DEPS_MACOS подхватятся автоматически по OS
 )
 

@@ -69,8 +69,20 @@ local M = {
     "File browser"
   },
 
-  ------ explorer ------
-  { "<leader>e", "<cmd>Neotree toggle<CR>", "Toggle explorer" },
+------ explorer ------
+{
+  "<leader>e",
+  function()
+    local path = vim.fn.expand("%:p")
+    local stat = vim.loop.fs_stat(path)
+    local dir = (stat and stat.type == "file")
+      and vim.fn.fnamemodify(path, ":h")
+      or vim.loop.cwd()
+
+    require("mini.files").open(dir, true)
+  end,
+  "Mini Files",
+},
 
   { ------ mini files ------
     "<leader>mf",

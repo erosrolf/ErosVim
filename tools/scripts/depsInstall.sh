@@ -59,6 +59,7 @@ install_macos() {
     [node]="node"
     [cc]="llvm"     # optional; macOS already has clang via Xcode CLT; see below
     [make]="make"
+    [vscode-json-language-server]="vscode-langservers-extracted"
   )
 
   local -a pkgs=()
@@ -101,6 +102,7 @@ install_linux_apt() {
     [node]="nodejs"
     [make]="make"
     [cc]="build-essential"
+    [vscode-json-language-server]="node-vscode-langservers-extracted"
   )
 
   local -a pkgs=()

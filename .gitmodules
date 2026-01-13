@@ -103,3 +103,6 @@
 [submodule "config/pack/my-plugins/start/lualine.nvim"]
 	path = config/pack/my-plugins/start/lualine.nvim
 	url = https://github.com/nvim-lualine/lualine.nvim.git
+[submodule "config/pack/my-plugins/start/winbar.nvim"]
+	path = config/pack/my-plugins/start/winbar.nvim
+	url = https://github.com/fgheng/winbar.nvim.git

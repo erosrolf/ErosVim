@@ -4,4 +4,5 @@
 *.swo
 *.bak
 *.tmp
+.local/
 .undodir/

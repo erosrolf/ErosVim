@@ -112,6 +112,8 @@ function M.preview_hunk_popup()
   )
 end
 
+
+
 -- Пересборка проекта и перезапуск LSP
 function M.staros_rebuild()
   vim.cmd("botright split | resize 15 | terminal")
@@ -131,6 +133,89 @@ function M.staros_rebuild()
       vim.notify("Rebuild complete and LSP restarted", vim.log.levels.INFO)
     end,
   })
+end
+
+
+
+-- Copy absolute path + whole buffer content to system clipboard (+)
+function M.copy_file_path_and_content()
+  local path = vim.fn.expand("%:p")
+  if path == "" then
+    vim.notify("No file path for current buffer", vim.log.levels.WARN)
+    return
+  end
+
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  local text = table.concat(lines, "\n")
+
+  local result = path .. "\n\n" .. text
+  vim.fn.setreg("+", result)
+  vim.notify("Copied file path + content to clipboard", vim.log.levels.INFO)
+end
+
+
+
+-- Format JSON exactly like project hook: jq -M -S --indent 4 .
+-- Returns true if buffer was changed, false otherwise.
+function M.format_json_like_hook(bufnr)
+  bufnr = bufnr or 0
+
+  -- jq can't handle jsonc (comments / trailing commas). Keep it strict.
+  local ft = vim.bo[bufnr].filetype
+  if ft ~= "json" then
+    return false
+  end
+
+  -- If buffer is empty, do nothing
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
+  if #lines == 0 then
+    return false
+  end
+
+  -- Ensure jq exists
+  if vim.fn.executable("jq") ~= 1 then
+    vim.notify("jq not found in PATH", vim.log.levels.WARN)
+    return false
+  end
+
+  local input = table.concat(lines, "\n")
+
+  -- Run jq with exact project flags
+  local cmd = { "jq", "-M", "-S", "--indent", "4", "." }
+  local output = vim.fn.system(cmd, input)
+
+  if vim.v.shell_error ~= 0 then
+    -- invalid JSON; don't block save, just notify
+    vim.notify("jq failed: buffer is not valid JSON", vim.log.levels.WARN)
+    return false
+  end
+
+  local out_lines = vim.split(output, "\n", { plain = true })
+  if out_lines[#out_lines] == "" then
+    table.remove(out_lines, #out_lines)
+  end
+
+  -- No changes -> do nothing
+  if #out_lines == #lines then
+    local same = true
+    for i = 1, #lines do
+      if lines[i] ~= out_lines[i] then
+        same = false
+        break
+      end
+    end
+    if same then
+      return false
+    end
+  end
+
+  local view = vim.fn.winsaveview()
+
+  -- One undo step
+  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, out_lines)
+
+  vim.fn.winrestview(view)
+  return true
 end
 
 return M

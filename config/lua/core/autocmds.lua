@@ -25,3 +25,11 @@ vim.api.nvim_create_autocmd("BufWritePost", {
     end
   end,
 })
+
+----- disable winbar for mini.files windows -----
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = { "minifiles", "mini.files" },
+  callback = function()
+    vim.opt_local.winbar = ""
+  end,
+})

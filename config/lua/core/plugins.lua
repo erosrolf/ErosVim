@@ -9,13 +9,13 @@ local function safe_require(name)
   return mod
 end
 
-safe_require("plugins.treesitter")
-safe_require("plugins.comment")
-safe_require("plugins.lsp")
-safe_require("plugins.lsp_signature")
-safe_require("plugins.cmp")
-safe_require("plugins.nvim-navic")
-safe_require("plugins.gitsigns")
+require("plugins.treesitter")
+require("plugins.comment")
+require("plugins.lsp")
+require("plugins.lsp_signature")
+require("plugins.cmp")
+require("plugins.nvim-navic")
+require("plugins.gitsigns")
 safe_require("plugins.trouble")
 
 -- telescope
@@ -30,8 +30,7 @@ safe_require("plugins.ui")
 safe_require("plugins.miniicons")
 safe_require("plugins.bufferline")
 safe_require("plugins.mini_files")
-safe_require("plugins.lualine")
+safe_require("plugins.winbar")
 
--- colorschemes
-safe_require("plugins.catpuccin")
-safe_require("plugins.github-nvim-theme")
+-- colorscheme
+vim.cmd.colorscheme("eros-light")

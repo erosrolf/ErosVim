@@ -1,5 +1,3 @@
-vim.cmd("colorscheme dayfox")
-
 vim.o.termguicolors = true
 vim.o.lazyredraw = false
 vim.o.ttyfast = true
@@ -20,7 +18,9 @@ vim.opt.expandtab = true
 vim.opt.smartindent = true
 vim.opt.scrolloff = 5
 
-local two_space_languages = { "lua", "json", "jsonc", "yaml", "html" }
+local two_space_languages = { "lua", "yaml", "html" }
+local four_space_languages = { "json", "jsonc" }
+
 vim.api.nvim_create_autocmd("FileType", {
   pattern = two_space_languages,
   callback = function()
@@ -30,3 +30,20 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = four_space_languages,
+  callback = function()
+    vim.opt_local.shiftwidth = 4
+    vim.opt_local.tabstop = 4
+    vim.opt_local.softtabstop = 4
+    vim.opt_local.expandtab = true
+  end,
+})
+
+vim.api.nvim_create_user_command(
+  "CopyFileWithPath",
+  function()
+    require("core.functions").copy_file_path_and_content()
+  end,
+  {}
+)
