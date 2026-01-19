@@ -79,15 +79,6 @@
 [submodule "config/pack/my-plugins/start/aerial.nvim"]
 	path = config/pack/my-plugins/start/aerial.nvim
 	url = https://github.com/stevearc/aerial.nvim
-[submodule "config/pack/my-plugins/start/trouble.nvim"]
-	path = config/pack/my-plugins/start/trouble.nvim
-	url = https://github.com/folke/trouble.nvim
-[submodule "config/pack/my-plugins/start/neotest"]
-	path = config/pack/my-plugins/start/neotest
-	url = https://github.com/nvim-neotest/neotest.git
-[submodule "config/pack/my-plugins/start/neotest-gtest"]
-	path = config/pack/my-plugins/start/neotest-gtest
-	url = https://github.com/alfaix/neotest-gtest.git
 [submodule "config/pack/my-plugins/start/nvim-nio"]
 	path = config/pack/my-plugins/start/nvim-nio
 	url = https://github.com/nvim-neotest/nvim-nio.git

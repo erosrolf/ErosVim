@@ -140,12 +140,21 @@ local M = {
     "Close others buffers"
   },
   { ------ save buffer ------
-    "<leader>w", 
+    "<leader>w",
     function()
+      local ft = vim.bo.filetype
+  
+      -- Если фокус в mini.files → синхронизация FS
+      if ft == "minifiles" then
+        require("mini.files").synchronize()
+        return
+      end
+  
+      -- Обычное поведение
       vim.lsp.buf.format({ async = false })
-     vim.cmd("write")
+      vim.cmd("write")
     end,
-    "Format & Save"
+    "Format & Save / MiniFiles Sync"
   },
   { ------ smart close -------
     "<leader>q",
