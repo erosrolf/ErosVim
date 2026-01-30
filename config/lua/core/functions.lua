@@ -290,11 +290,53 @@ function M.set_clangd_compile_commands_from_current_buffer(opts)
 end
 
 -- =========================================================
+-- git diff vs HEAD~N to buffer
+-- =========================================================
+function M.git_diff_to_buffer(count)
+  count = tonumber(count) or 0
+
+  local target = (count > 0) and ("HEAD~" .. count) or "HEAD"
+  local cmd = "git diff " .. target
+  local output = vim.fn.systemlist(cmd)
+
+  if vim.v.shell_error ~= 0 then
+    vim.notify("Git diff failed: " .. cmd, vim.log.levels.ERROR)
+    return
+  end
+
+  if #output == 0 then
+    vim.notify("No changes vs " .. target, vim.log.levels.INFO)
+    return
+  end
+
+  -- clipboard
+  vim.fn.setreg("+", table.concat(output, "\n"))
+
+  -- scratch buffer
+  vim.cmd("enew")
+  local buf = vim.api.nvim_get_current_buf()
+
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, output)
+
+  vim.bo[buf].buftype = "nofile"
+  vim.bo[buf].bufhidden = "wipe"
+  vim.bo[buf].swapfile = false
+  vim.bo[buf].modifiable = false
+  vim.bo[buf].readonly = true
+  vim.bo[buf].filetype = "diff"
+
+  vim.api.nvim_buf_set_name(buf, "git-diff:" .. target)
+
+  vim.notify(("Git diff vs %s (copied to clipboard)"):format(target), vim.log.levels.INFO)
+end
+
+-- =========================================================
 -- User commands (define once)
 -- =========================================================
-if not vim.g.__clangd_cc_cmds_defined then
-  vim.g.__clangd_cc_cmds_defined = true
+if not vim.g.__core_functions_cmds_defined then
+  vim.g.__core_functions_cmds_defined = true
 
+  -- clangd
   vim.api.nvim_create_user_command("ClangdUseCC", function()
     require("core.functions").set_clangd_compile_commands_from_current_buffer({ restart = true })
   end, {})
@@ -306,6 +348,147 @@ if not vim.g.__clangd_cc_cmds_defined then
     else
       vim.notify("clangd compile_commands.json is not set", vim.log.levels.WARN)
     end
+  end, {})
+
+  -- build tools (delegated to plugins/eros_build_tool.lua)
+  vim.api.nvim_create_user_command("PickCwdBuild", function(opts)
+    local bt = _build_tool()
+    if not bt then
+      vim.notify("plugins.eros_build_tool is not available", vim.log.levels.ERROR)
+      return
+    end
+    bt.pick_cwd_build(opts.args)
+  end, {
+    nargs = 1,
+    desc = "Set build CWD to <repo_root>/<arg> and load .nvim-build.lua there",
+    complete = function(_, line)
+      local bt = _build_tool()
+      if bt and bt.complete_pick_cwd_build then
+        return bt.complete_pick_cwd_build(line)
+      end
+      return {}
+    end,
+  })
+
+  vim.api.nvim_create_user_command("PickCwdBuildShow", function()
+    local bt = _build_tool()
+    if not bt or not bt.show_cwd_build then
+      vim.notify("plugins.eros_build_tool is not available", vim.log.levels.ERROR)
+      return
+    end
+    bt.show_cwd_build()
+  end, { desc = "Show current build CWD" })
+
+  vim.api.nvim_create_user_command("PickCwdBuildClear", function()
+    local bt = _build_tool()
+    if not bt or not bt.clear_cwd_build then
+      vim.notify("plugins.eros_build_tool is not available", vim.log.levels.ERROR)
+      return
+    end
+    bt.clear_cwd_build()
+  end, { desc = "Clear saved build CWD" })
+
+  vim.api.nvim_create_user_command("BuildTarget", function(cmdopts)
+    local bt = _build_tool()
+    if not bt or not bt.build_target then
+      vim.notify("plugins.eros_build_tool is not available", vim.log.levels.ERROR)
+      return
+    end
+    bt.build_target({ target = cmdopts.args })
+  end, {
+    nargs = "?",
+    desc = "Build target (infer from current file via build.ninja, or provide explicit target)",
+  })
+
+  vim.api.nvim_create_user_command("BuildLog", function()
+    local bt = _build_tool()
+    if not bt or not bt.show_build_log then
+      vim.notify("plugins.eros_build_tool is not available", vim.log.levels.ERROR)
+      return
+    end
+    bt.show_build_log()
+  end, { desc = "Reopen last build/test log window" })
+
+  -- git diff
+  vim.api.nvim_create_user_command("GitDiffHead", function(opts)
+    require("core.functions").git_diff_to_buffer(opts.args)
+  end, {
+    nargs = "?",
+    complete = function()
+      return { "1", "2", "3", "5", "10" }
+    end,
+    desc = "Git diff vs HEAD~N (default: HEAD)",
+  })
+
+  ------ open current buffer in Finder / File Manager ------
+  function M.open_buffer_in_finder()
+    local buf = vim.api.nvim_get_current_buf()
+    local name = vim.api.nvim_buf_get_name(buf)
+
+    local function notify(msg, level)
+      vim.notify(msg, level or vim.log.levels.INFO, { title = "OpenBufferInFinder" })
+    end
+
+    local function is_dir(path)
+      local st = vim.loop.fs_stat(path)
+      return st and st.type == "directory"
+    end
+
+    local function is_file(path)
+      local st = vim.loop.fs_stat(path)
+      return st and st.type == "file"
+    end
+
+    -- Если буфер не привязан к файлу — откроем cwd
+    if name == nil or name == "" then
+      local cwd = vim.loop.cwd()
+      if not cwd or cwd == "" then
+        notify("Не удалось определить cwd", vim.log.levels.ERROR)
+        return
+      end
+      name = cwd
+    else
+      name = vim.fn.fnamemodify(name, ":p")
+    end
+
+    local sys = (vim.loop.os_uname().sysname or ""):lower()
+    local cmd
+
+    if sys:find("darwin") then
+      -- macOS: если файл — показать в Finder, если папка — открыть папку
+      if is_file(name) then
+        cmd = { "open", "-R", name }
+      else
+        local dir = is_dir(name) and name or vim.fn.fnamemodify(name, ":h")
+        cmd = { "open", dir }
+      end
+    elseif sys:find("windows") then
+      -- Windows: выделить файл в проводнике или открыть папку
+      if is_file(name) then
+        cmd = { "explorer.exe", "/select,", name }
+      else
+        local dir = is_dir(name) and name or vim.fn.fnamemodify(name, ":h")
+        cmd = { "explorer.exe", dir }
+      end
+    else
+      -- Linux/Unix: открыть папку через xdg-open
+      local dir = is_dir(name) and name or vim.fn.fnamemodify(name, ":h")
+      cmd = { "xdg-open", dir }
+    end
+
+    local ok = vim.fn.jobstart(cmd, { detach = true }) > 0
+    if not ok then
+      notify("Не удалось запустить файловый менеджер", vim.log.levels.ERROR)
+      return
+    end
+
+    -- Ненавязчиво
+    -- notify("Открыл в файловом менеджере")
+  end
+
+  -- Команда :OpenBufferInFinder
+  pcall(vim.api.nvim_create_user_command, "OpenBufferInFinder", function()
+    require("core.functions").open_buffer_in_finder()
   end, {})
 end
 

@@ -11,12 +11,24 @@ vim.opt.undofile = true
 vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
 vim.g.silent_swap_clean = true
 
+-- отключаем q:
+vim.keymap.set("n", "q:", "<nop>")
+vim.keymap.set("n", "q/", "<nop>")
+vim.keymap.set("n", "q?", "<nop>")
+
 -- отступы
 vim.opt.tabstop = 4
 vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 vim.opt.smartindent = true
 vim.opt.scrolloff = 5
+vim.opt.signcolumn = "yes:1"
+
+vim.api.nvim_set_hl(0, "GitHunksOutlinePreview", { link = "Visual" })
+
+-- поиск grep
+vim.o.grepprg = "rg --vimgrep --smart-case"
+vim.o.grepformat = "%f:%l:%c:%m"
 
 local two_space_languages = { "lua", "yaml", "html" }
 local four_space_languages = { "json", "jsonc" }

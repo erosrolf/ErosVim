@@ -1,0 +1,14 @@
+:BuildLog	eros_build_tool.txt	/*:BuildLog*
+:BuildTarget	eros_build_tool.txt	/*:BuildTarget*
+:PickCwdBuild	eros_build_tool.txt	/*:PickCwdBuild*
+:PickCwdBuildClear	eros_build_tool.txt	/*:PickCwdBuildClear*
+:PickCwdBuildShow	eros_build_tool.txt	/*:PickCwdBuildShow*
+:TestFile	eros_build_tool.txt	/*:TestFile*
+:TestNearest	eros_build_tool.txt	/*:TestNearest*
+eros_build_tool	eros_build_tool.txt	/*eros_build_tool*
+eros_build_tool.txt	eros_build_tool.txt	/*eros_build_tool.txt*
+eros_build_tool_author	eros_build_tool.txt	/*eros_build_tool_author*
+eros_build_tool_commands	eros_build_tool.txt	/*eros_build_tool_commands*
+eros_build_tool_notes	eros_build_tool.txt	/*eros_build_tool_notes*
+eros_build_tool_project	eros_build_tool.txt	/*eros_build_tool_project*
+eros_build_tool_setup	eros_build_tool.txt	/*eros_build_tool_setup*

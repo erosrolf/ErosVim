@@ -1,0 +1,97 @@
+
+*eros_build_tool.txt*  Build & gtest helper for CMake projects
+
+==============================================================================
+EROS-BUILD-TOOL                                         *eros_build_tool*
+
+Build and test helper plugin for Neovim.
+Designed for CMake + Ninja projects with gtest.
+
+Features:
+- Persistent build root selection
+- Target inference via build.ninja
+- Reopenable build/test terminal
+- Run nearest gtest or all tests in file
+
+==============================================================================
+SETUP                                                     *eros_build_tool_setup*
+
+The plugin is configured via |lua|:
+
+>
+  require("eros_build_tool").setup({
+    log = {
+      height = 12,
+      position = "botright",
+      open_cmd = "split",
+      replace_mode = true,
+    },
+    state = {
+      enabled = true,
+    },
+    commands = {
+      enabled = true,
+    },
+  })
+<
+
+==============================================================================
+COMMANDS                                                  *eros_build_tool_commands*
+
+*:PickCwdBuild* {path}
+    Set build root to <repo_root>/<path> and load .nvim-build.lua.
+
+*:PickCwdBuildShow*
+    Show current build root.
+
+*:PickCwdBuildClear*
+    Clear saved build root.
+
+*:BuildTarget* [{target}]
+    Build CMake target.
+    If target is omitted, it is inferred from current file
+    using build.ninja.
+
+*:BuildLog*
+    Reopen last build or test log window.
+
+*:TestNearest*
+    Run nearest gtest (TEST / TEST_F / TEST_P) under cursor.
+
+*:TestFile*
+    Run all gtests found in the current file.
+
+==============================================================================
+PROJECT CONFIG                                            *eros_build_tool_project*
+
+The plugin optionally loads a project-local configuration file:
+
+>
+  <project_root>/.nvim-build.lua
+<
+
+Example:
+
+>
+  vim.g.buildcfg = {
+    preset = "user-conan-debug",
+    build_dir = "build",
+    tests_dir = "build/tests",
+  }
+<
+
+==============================================================================
+NOTES                                                     *eros_build_tool_notes*
+
+- Commands are created automatically unless disabled in setup.
+- Build output is shown in a persistent terminal window.
+- Closing the log window does not kill the underlying buffer.
+
+==============================================================================
+AUTHOR                                                    *eros_build_tool_author*
+
+Written by erosrolf.
+
+==============================================================================
+
+vim:tw=78:ft=help:norl:

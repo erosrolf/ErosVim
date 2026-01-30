@@ -1,9 +1,6 @@
 [submodule "config/pack/my-plugins/start/nvim-treesitter"]
 	path = config/pack/my-plugins/start/nvim-treesitter
 	url = https://github.com/nvim-treesitter/nvim-treesitter
-[submodule "config/pack/my-plugins/start/telescope.nvim"]
-	path = config/pack/my-plugins/start/telescope.nvim
-	url = https://github.com/nvim-telescope/telescope.nvim
 [submodule "config/pack/my-plugins/start/Comment.nvim"]
 	path = config/pack/my-plugins/start/Comment.nvim
 	url = https://github.com/numToStr/Comment.nvim
@@ -31,9 +28,6 @@
 [submodule "config/pack/my-plugins/start/dressing.nvim"]
 	path = config/pack/my-plugins/start/dressing.nvim
 	url = https://github.com/stevearc/dressing.nvim
-[submodule "config/pack/my-plugins/start/telescope-file-browser.nvim"]
-	path = config/pack/my-plugins/start/telescope-file-browser.nvim
-	url = https://github.com/nvim-telescope/telescope-file-browser.nvim
 [submodule "config/pack/my-plugins/start/mini.files"]
 	path = config/pack/my-plugins/start/mini.files
 	url = https://github.com/echasnovski/mini.files
@@ -82,9 +76,6 @@
 [submodule "config/pack/my-plugins/start/nvim-nio"]
 	path = config/pack/my-plugins/start/nvim-nio
 	url = https://github.com/nvim-neotest/nvim-nio.git
-[submodule "config/pack/my-plugins/start/telescope-live-grep-args.nvim"]
-	path = config/pack/my-plugins/start/telescope-live-grep-args.nvim
-	url = https://github.com/nvim-telescope/telescope-live-grep-args.nvim
 [submodule "config/pack/my-plugins/start/nui.nvim"]
 	path = config/pack/my-plugins/start/nui.nvim
 	url = https://github.com/MunifTanjim/nui.nvim.git
@@ -97,3 +88,15 @@
 [submodule "config/pack/my-plugins/start/winbar.nvim"]
 	path = config/pack/my-plugins/start/winbar.nvim
 	url = https://github.com/fgheng/winbar.nvim.git
+[submodule "config/pack/my-plugins/start/mini.nvim"]
+	path = config/pack/my-plugins/start/mini.nvim
+	url = https://github.com/echasnovski/mini.nvim.git
+[submodule "config/pack/my-plugins/start/mini.extra"]
+	path = config/pack/my-plugins/start/mini.extra
+	url = https://github.com/echasnovski/mini.extra.git
+[submodule "config/pack/my-plugins/start/vim-illuminate"]
+	path = config/pack/my-plugins/start/vim-illuminate
+	url = https://github.com/RRethy/vim-illuminate.git
+[submodule "config/pack/my-plugins/start/blame.nvim"]
+	path = config/pack/my-plugins/start/blame.nvim
+	url = https://github.com/FabijanZulj/blame.nvim

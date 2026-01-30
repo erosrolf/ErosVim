@@ -65,7 +65,7 @@ call s:Hi('ColorColumn',   '',        s:bg2, '')
 call s:Hi('LineNr',        s:fg2,     s:bg2, '')
 call s:Hi('CursorLineNr',  s:fg,      s:bg2, 'bold')
 
-call s:Hi('SignColumn',    s:comment, s:bg2, '')
+call s:Hi('SignColumn',    s:comment, s:bg, '')
 call s:Hi('FoldColumn',    s:comment, s:bg2, '')
 call s:Hi('Folded',        s:fg4,     s:bg,  '')
 
@@ -265,3 +265,13 @@ let g:terminal_color_12 = s:type
 let g:terminal_color_13 = s:const
 let g:terminal_color_14 = s:fg4
 let g:terminal_color_15 = s:comment
+
+" -------------------------
+" GitSigns (signcolumn uses guifg!)
+" -------------------------
+call s:Hi('GitSignsAdd',          s:str,     '', '')
+call s:Hi('GitSignsChange',       s:warn,    '', '')
+call s:Hi('GitSignsDelete',       s:error,   '', '')
+call s:Hi('GitSignsTopdelete',    s:error,   '', '')
+call s:Hi('GitSignsChangedelete', s:warn,    '', '')
+call s:Hi('GitSignsUntracked',    s:builtin, '', '')
