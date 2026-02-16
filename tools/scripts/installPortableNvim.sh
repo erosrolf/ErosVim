@@ -9,17 +9,17 @@ source "$SCRIPT_DIR/checkEnvironment.sh"
 
 usage() {
   cat <<EOF
-Usage: installPortableNvim.sh [--latest] [--version vX.Y.Z]
+Usage: installPortableNvim.sh [--latest] [--version vX.Y.Z] [--nightly]
 
 Options:
   --latest           Install latest stable Neovim release (from GitHub API)
   --version <tag>    Install specific version tag, e.g. v0.11.5
+  --nightly          Install latest nightly build (unstable, from master branch)
 EOF
 }
 
 getLatestReleaseTag() {
   have curl || die "curl is required"
-  # GitHub API: latest release tag_name
   curl -fsSL "https://api.github.com/repos/neovim/neovim/releases/latest" \
     | sed -n 's/.*"tag_name":[[:space:]]*"\([^"]*\)".*/\1/p' \
     | head -n 1
@@ -49,14 +49,21 @@ downloadAndExtractTarGz() {
   rm -rf "$tmp"
 }
 
+checkAssetExists() {
+  local url="$1"
+  curl -fsSIL --connect-timeout 5 --max-time 15 "$url" >/dev/null 2>&1
+}
+
 main() {
   local force_latest=0
   local force_version=""
+  local install_nightly=0
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
       --latest) force_latest=1; shift ;;
       --version) force_version="$2"; shift 2 ;;
+      --nightly) install_nightly=1; shift ;;
       -h|--help) usage; exit 0 ;;
       *) die "Unknown arg: $1" ;;
     esac
@@ -64,7 +71,10 @@ main() {
 
   [[ "$NVIMCFG_OS" != "unknown" ]] || die "Unsupported OS"
 
-  if [[ -n "$force_version" ]]; then
+  # Определяем версию для установки
+  if [[ "$install_nightly" == "1" ]]; then
+    NVIMCFG_NVIM_VERSION="nightly"
+  elif [[ -n "$force_version" ]]; then
     NVIMCFG_NVIM_VERSION="$force_version"
   elif [[ "$force_latest" == "1" ]]; then
     local latest
@@ -83,30 +93,66 @@ main() {
       if [[ "$NVIMCFG_ARCH" == "arm64" ]]; then
         asset="nvim-linux-arm64.tar.gz"
       fi
-      local url="https://github.com/neovim/neovim/releases/download/${NVIMCFG_NVIM_VERSION}/${asset}"
+      
+      # Для nightly используем специальный URL
+      if [[ "$NVIMCFG_NVIM_VERSION" == "nightly" ]]; then
+        local url="https://github.com/neovim/neovim/releases/download/nightly/${asset}"
+      else
+        local url="https://github.com/neovim/neovim/releases/download/${NVIMCFG_NVIM_VERSION}/${asset}"
+      fi
+      
       downloadAndExtractTarGz "$url" "$NVIMCFG_NVIM_INSTALL_DIR"
       ;;
     macos)
       local candidates=()
-      if [[ "$NVIMCFG_ARCH" == "arm64" ]]; then
-        candidates+=("nvim-macos-arm64.tar.gz")
+      
+      # Для nightly используем архитектурно-специфичные имена
+      if [[ "$NVIMCFG_NVIM_VERSION" == "nightly" ]]; then
+        if [[ "$NVIMCFG_ARCH" == "arm64" ]]; then
+          candidates=("nvim-macos-arm64.tar.gz")
+        else
+          candidates=("nvim-macos-x86_64.tar.gz")
+        fi
       else
-        candidates+=("nvim-macos-x86_64.tar.gz")
+        # Для обычных версий
+        if [[ "$NVIMCFG_ARCH" == "arm64" ]]; then
+          candidates+=("nvim-macos-arm64.tar.gz")
+        else
+          candidates+=("nvim-macos-x86_64.tar.gz")
+        fi
+        candidates+=("nvim-macos.tar.gz")
       fi
-      candidates+=("nvim-macos.tar.gz")
 
       local ok=0
       for asset in "${candidates[@]}"; do
-        local url="https://github.com/neovim/neovim/releases/download/${NVIMCFG_NVIM_VERSION}/${asset}"
-        log "Trying: $asset"
-          if curl -fsSIL --connect-timeout 5 --max-time 15 "$url" >/dev/null 2>&1; then
+        if [[ "$NVIMCFG_NVIM_VERSION" == "nightly" ]]; then
+          local url="https://github.com/neovim/neovim/releases/download/nightly/${asset}"
+        else
+          local url="https://github.com/neovim/neovim/releases/download/${NVIMCFG_NVIM_VERSION}/${asset}"
+        fi
+        
+        if checkAssetExists "$url"; then
+          log "Found: $asset"
           downloadAndExtractTarGz "$url" "$NVIMCFG_NVIM_INSTALL_DIR"
           ok=1
           break
         fi
         warn "Not found: $asset"
       done
-      [[ "$ok" == "1" ]] || die "Could not find a macOS asset for ${NVIMCFG_NVIM_VERSION}"
+      
+      if [[ "$ok" != "1" ]]; then
+        if [[ "$NVIMCFG_NVIM_VERSION" == "nightly" ]]; then
+          die "Could not find macOS nightly asset. Check if nightly builds are available for your architecture."
+        else
+          die "Could not find a macOS asset for ${NVIMCFG_NVIM_VERSION}"
+        fi
+      fi
+      
+      # Для macOS снимаем карантин
+      if [[ -x "$NVIMCFG_NVIM_BIN_DIR/nvim" ]]; then
+        log "Removing quarantine attribute..."
+        xattr -d com.apple.quarantine "$NVIMCFG_NVIM_BIN_DIR/nvim" 2>/dev/null || true
+      fi
       ;;
   esac
 
@@ -118,4 +164,3 @@ main() {
 }
 
 main "$@"
-
