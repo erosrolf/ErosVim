@@ -4,9 +4,6 @@
 [submodule "config/pack/my-plugins/start/Comment.nvim"]
 	path = config/pack/my-plugins/start/Comment.nvim
 	url = https://github.com/numToStr/Comment.nvim
-[submodule "config/pack/my-plugins/start/plenary.nvim"]
-	path = config/pack/my-plugins/start/plenary.nvim
-	url = https://github.com/nvim-lua/plenary.nvim
 [submodule "config/pack/my-plugins/start/nvim-lspconfig"]
 	path = config/pack/my-plugins/start/nvim-lspconfig
 	url = https://github.com/neovim/nvim-lspconfig
@@ -49,12 +46,6 @@
 [submodule "config/pack/my-plugins/start/nvim"]
 	path = config/pack/my-plugins/start/nvim
 	url = https://github.com/catppuccin/nvim
-[submodule "config/pack/my-plugins/start/github-nvim-theme"]
-	path = config/pack/my-plugins/start/github-nvim-theme
-	url = https://github.com/projekt0n/github-nvim-theme
-[submodule "config/pack/my-plugins/start/kanagawa.nvim"]
-	path = config/pack/my-plugins/start/kanagawa.nvim
-	url = https://github.com/rebelot/kanagawa.nvim
 [submodule "config/pack/my-plugins/start/nightfox.nvim"]
 	path = config/pack/my-plugins/start/nightfox.nvim
 	url = https://github.com/EdenEast/nightfox.nvim
@@ -79,9 +70,6 @@
 [submodule "config/pack/my-plugins/start/nui.nvim"]
 	path = config/pack/my-plugins/start/nui.nvim
 	url = https://github.com/MunifTanjim/nui.nvim.git
-[submodule "config/pack/my-plugins/start/alpha-nvim"]
-	path = config/pack/my-plugins/start/alpha-nvim
-	url = https://github.com/goolord/alpha-nvim.git
 [submodule "config/pack/my-plugins/start/lualine.nvim"]
 	path = config/pack/my-plugins/start/lualine.nvim
 	url = https://github.com/nvim-lualine/lualine.nvim.git
