@@ -1,5 +1,7 @@
 require("core.options")
-require("core.plugins")
+local plugins = require("core.plugins")
+require("core.pack").setup(plugins)
+--require("core.custom_plugins")
 require("core.keymaps")
 require("core.autocmds")
 require("core.functions")

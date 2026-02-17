@@ -1,38 +1,58 @@
-require("plugins.treesitter")
-require("plugins.comment")
-require("plugins.lsp")
-require("plugins.lsp_signature")
-require("plugins.illuminate")
-require("plugins.cmp")
-require("plugins.nvim-navic")
+return {
+  { name = "nightfox", config = "plugins.nightfox",
+    src = "https://github.com/EdenEast/nightfox.nvim" },
 
--- aerial
-require("plugins.aerial")
+  { name = "nvim-lspconfig", config = "plugins.lsp",
+    src = "https://github.com/neovim/nvim-lspconfig" },
 
--- mini
-require("plugins.mini_icons")
-require("plugins.mini_files")
-require("plugins.mini_pick")
-require("plugins.mini_extra")
+  { name = "lsp_signature", config = "plugins.lsp_signature",
+    src = "https://github.com/ray-x/lsp_signature.nvim" },
 
--- ui
-require("plugins.ui")
-require("plugins.bufferline")
-require("plugins.winbar")
+  { name = "mini.comment", config = "plugins.mini_comment",
+    src = "https://github.com/nvim-mini/mini.comment" },
 
--- colorscheme
-vim.cmd.colorscheme("eros-light")
+  { name = "mini.completion", config = "plugins.mini_completion",
+    src = "https://github.com/nvim-mini/mini.completion" },
 
--- git
-require("plugins.gitsigns")
-require("plugins.diffview")
-require("plugins.blame")
+  { name = "mini.extra", config = "plugins.mini_extra",
+    src = "https://github.com/nvim-mini/mini.extra" },
 
-require("plugins.git_ranges_jump").setup({
-  develop_ref = "develop",
-  keymaps = { next = "]d", prev = "[d" },
-  enable = { red = true, green = true, orange = true },
-})
+  { name = "mini.files", config = "plugins.mini_files",
+    src = "https://github.com/nvim-mini/mini.files" },
 
--- custom
-require("plugins.eros_build_tool")
+  { name = "mini.icons", config = "plugins.mini_icons",
+    src = "https://github.com/nvim-mini/mini.icons" },
+
+  { name = "mini.pick", config = "plugins.mini_pick",
+    src = "https://github.com/nvim-mini/mini.pick" },
+
+  { name = "mini.surround", config = "plugins.mini_surround",
+    src = "https://github.com/nvim-mini/mini.surround" },
+
+  { name = "blame.nvim", config = "plugins.blame",
+    src = "https://github.com/FabijanZulj/blame.nvim" },
+
+  { name = "diffview.nvim", config = "plugins.diffview",
+    src = "https://github.com/sindrets/diffview.nvim" },
+
+  { name = "gitsigns.nvim", config = "plugins.gitsigns",
+    src = "https://github.com/lewis6991/gitsigns.nvim" },
+
+  { name = "aerial.nvim", config = "plugins.aerial",
+    src = "https://github.com/stevearc/aerial.nvim" },
+
+  { name = "bufferline.nvim", config = "plugins.bufferline",
+    src = "https://github.com/akinsho/bufferline.nvim" },
+
+  { name = "nvim-navic", config = "plugins.nvim_navic",
+    src = "https://github.com/SmiteshP/nvim-navic" },
+
+  { name = "winbar.nvim", config = "plugins.winbar",
+    src = "https://github.com/fgheng/winbar.nvim" },
+
+  { name = "vim-illuminate", config = "plugins.illuminate",
+    src = "https://github.com/RRethy/vim-illuminate" },
+
+  { name = "which-key.nvim", config = "plugins.which_key",
+    src = "https://github.com/folke/which-key.nvim" },
+}
