@@ -22,9 +22,6 @@
 [submodule "config/pack/my-plugins/start/dressing.nvim"]
 	path = config/pack/my-plugins/start/dressing.nvim
 	url = https://github.com/stevearc/dressing.nvim
-[submodule "config/pack/my-plugins/start/mini.files"]
-	path = config/pack/my-plugins/start/mini.files
-	url = https://github.com/echasnovski/mini.files
 [submodule "config/pack/my-plugins/start/nvim-navic"]
 	path = config/pack/my-plugins/start/nvim-navic
 	url = https://github.com/SmiteshP/nvim-navic
@@ -52,9 +49,6 @@
 [submodule "config/pack/my-plugins/start/diffview.nvim"]
 	path = config/pack/my-plugins/start/diffview.nvim
 	url = https://github.com/sindrets/diffview.nvim
-[submodule "config/pack/my-plugins/start/mini.icons"]
-	path = config/pack/my-plugins/start/mini.icons
-	url = https://github.com/echasnovski/mini.icons
 [submodule "config/pack/my-plugins/start/minimap.vim"]
 	path = config/pack/my-plugins/start/minimap.vim
 	url = https://github.com/wfxr/minimap.vim
@@ -76,9 +70,6 @@
 [submodule "config/pack/my-plugins/start/mini.nvim"]
 	path = config/pack/my-plugins/start/mini.nvim
 	url = https://github.com/echasnovski/mini.nvim.git
-[submodule "config/pack/my-plugins/start/mini.extra"]
-	path = config/pack/my-plugins/start/mini.extra
-	url = https://github.com/echasnovski/mini.extra.git
 [submodule "config/pack/my-plugins/start/vim-illuminate"]
 	path = config/pack/my-plugins/start/vim-illuminate
 	url = https://github.com/RRethy/vim-illuminate.git
