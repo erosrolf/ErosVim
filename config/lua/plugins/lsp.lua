@@ -1,12 +1,18 @@
-local lspconfig = require("lspconfig")
-local util = require("lspconfig.util")
 local navic = require("nvim-navic")
-local capabilities = require("cmp_nvim_lsp").default_capabilities()
 local functions = require("core.functions")
 local formatter = require("core.formatter")
 
+-- capabilities (cmp)
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+do
+  local ok_cmp, cmp_lsp = pcall(require, "cmp_nvim_lsp")
+  if ok_cmp then
+    capabilities = cmp_lsp.default_capabilities(capabilities)
+  end
+end
+
 local fallbackFlagsList = {
-  "-std=c++11", -- лучше совпадать с тем, что реально в compile_commands (у тебя c++11)
+  "-std=c++11",
   "-Wno-unknown-attributes",
   "-Wno-attributes",
   "-Wno-error=unknown-attributes",
@@ -19,17 +25,18 @@ local fallbackFlagsList = {
 
 local augroup = vim.api.nvim_create_augroup("LspFormatOnSave", { clear = false })
 
-local on_attach = function(client, bufnr)
-  -- winbar breadcrumbs: attach only once, only for selected servers
+local function on_attach(client, bufnr)
+  -- winbar breadcrumbs
   if (client.name == "clangd" or client.name == "jsonls")
-      and client.server_capabilities.documentSymbolProvider then
+      and client.server_capabilities
+      and client.server_capabilities.documentSymbolProvider
+  then
     navic.attach(client, bufnr)
   end
 
-  -- format on save (только если сервер поддерживает)
-  if client.server_capabilities.documentFormattingProvider then
+  -- format on save
+  if client.server_capabilities and client.server_capabilities.documentFormattingProvider then
     vim.api.nvim_clear_autocmds({ group = augroup, buffer = bufnr })
-
     vim.api.nvim_create_autocmd("BufWritePre", {
       group = augroup,
       buffer = bufnr,
@@ -40,82 +47,98 @@ local on_attach = function(client, bufnr)
   end
 end
 
-lspconfig.clangd.setup({
+-- root helpers (replacement for lspconfig.util.root_pattern)
+local function root_pattern(...)
+  local markers = { ... }
+  return function(bufname)
+    local start = (bufname and bufname ~= "") and vim.fs.dirname(bufname) or vim.loop.cwd()
+    local found = vim.fs.find(markers, { path = start, upward = true })[1]
+    return found and vim.fs.dirname(found) or nil
+  end
+end
 
+local function ensure_list_cmd(cmd)
+  if type(cmd) == "string" then
+    return { cmd }
+  end
+  return cmd
+end
+
+local function add_compile_commands_dir(cmd, cc_dir)
+  cmd = ensure_list_cmd(cmd or {})
+  local filtered = {}
+  for _, a in ipairs(cmd) do
+    if type(a) == "string" and not a:match("^%-%-compile%-commands%-dir=") then
+      table.insert(filtered, a)
+    end
+  end
+  if #filtered == 0 then
+    filtered = {
+      "clangd",
+      "--background-index",
+      "--header-insertion=never",
+      "--completion-style=detailed",
+    }
+  end
+  table.insert(filtered, "--compile-commands-dir=" .. cc_dir)
+  return filtered
+end
+
+-- small wrapper
+local function cfg(server, opts)
+  opts = opts or {}
+  opts.capabilities = opts.capabilities or capabilities
+  opts.on_attach = opts.on_attach or on_attach
+
+  vim.lsp.config(server, opts)
+  vim.lsp.enable(server)
+end
+
+-- clangd
+cfg("clangd", {
   filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "cc", "h" },
-  -- ВАЖНО:
-  -- 1) Не используем --extra-arg (Apple clangd их не знает)
-  -- 2) Не используем --clang-tidy=false (такого флага нет). Просто не включаем clang-tidy.
   cmd = {
     "clangd",
     "--background-index",
     "--header-insertion=never",
     "--completion-style=detailed",
-    -- Можно добавить логирование clangd при отладке:
-    -- "--log=verbose",
   },
-
-  root_dir = util.root_pattern(".git"),
-  capabilities = capabilities,
-  on_attach = on_attach,
-
+  root_dir = root_pattern(".git"),
   init_options = {
     fallbackFlags = fallbackFlagsList,
   },
 
-  -- Подмешиваем compile_commands-dir, но НЕ ломаем cmd.
-  on_new_config = function(new_config, _root_dir)
+  -- equivalent of on_new_config
+  on_init = function(client)
+    -- compute compile_commands dir once on init
     local cc_path = functions.get_clangd_compile_commands_path()
     if not cc_path or cc_path == "" then
       return
     end
+    local cc_dir = vim.fn.fnamemodify(cc_path, ":h")
 
-    local cc_dir = vim.functions.fnamemodify(cc_path, ":h")
+    -- update client config cmd
+    local c = client.config
+    c.cmd = add_compile_commands_dir(c.cmd, cc_dir)
 
-    -- clangd setup мог дать cmd строкой (редко, но бывает) — нормализуем
-    if type(new_config.cmd) == "string" then
-      new_config.cmd = { new_config.cmd }
-    end
-
-    -- Убираем старые --compile-commands-dir=..., чтобы не копились
-    local filtered = {}
-    for _, a in ipairs(new_config.cmd or {}) do
-      if type(a) == "string" and not a:match("^%-%-compile%-commands%-dir=") then
-        table.insert(filtered, a)
-      end
-    end
-
-    -- Если вдруг cmd пустой — безопасно восстановим базовый
-    if #filtered == 0 then
-      filtered = {
-        "clangd",
-        "--background-index",
-        "--header-insertion=never",
-        "--completion-style=detailed",
-      }
-    end
-
-    table.insert(filtered, "--compile-commands-dir=" .. cc_dir)
-    new_config.cmd = filtered
-
-    -- Страховка: init_options могли затереться
-    new_config.init_options = new_config.init_options or {}
-    new_config.init_options.fallbackFlags = fallbackFlagsList
+    -- keep fallbackFlags
+    c.init_options = c.init_options or {}
+    c.init_options.fallbackFlags = fallbackFlagsList
   end,
 })
 
-lspconfig.jsonls.setup({
-  capabilities = capabilities,
-  on_attach = on_attach,
+-- jsonls
+cfg("jsonls", {
+  root_dir = root_pattern(".git"),
 })
 
-lspconfig.buf_ls.setup({
+-- buf_ls (proto)
+cfg("buf_ls", {
   cmd = { "buf", "lsp", "serve" },
   filetypes = { "proto" },
-  root_dir = util.root_pattern("buf.work.yaml", "buf.yaml", ".git"),
-  capabilities = capabilities,
-
+  root_dir = root_pattern("buf.work.yaml", "buf.yaml", ".git"),
   on_attach = function(client, bufnr)
+    -- disable formatting from buf_ls
     client.server_capabilities.documentFormattingProvider = false
     client.server_capabilities.documentRangeFormattingProvider = false
     on_attach(client, bufnr)

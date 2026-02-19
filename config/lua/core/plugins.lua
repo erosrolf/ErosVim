@@ -13,6 +13,7 @@ require("plugins.aerial")
 require("plugins.mini_icons")
 require("plugins.mini_files")
 require("plugins.mini_pick")
+require("plugins.mini_visits")
 require("plugins.mini_extra")
 
 -- code 

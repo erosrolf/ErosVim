@@ -13,11 +13,11 @@
 
 vim.g.mapleader = " "
 
-local map       = vim.keymap.set
-local func      = require("core.functions")
-local extra     = require("mini.extra")
-local mole      = require("mole")
-local formatter = require("core.formatter")
+local map         = vim.keymap.set
+local func        = require("core.functions")
+local extra       = require("mini.extra")
+local mole        = require("mole")
+local formatter   = require("core.formatter")
 
   -- ==========================================================
   -- MOLE
@@ -173,7 +173,13 @@ local M = {
     end,
     "Grep JSON (quickfix)",
   },
-  { "<leader>fo", extra.pickers.oldfiles, "Recent files" },
+  {
+    "<leader>fo",
+    function()
+      require("mini.visits").select_path()
+    end,
+    "Recent files (visits)"
+  },
 
   -- ==========================================================
   -- Explorer (mini.files)
