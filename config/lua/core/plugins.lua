@@ -15,6 +15,7 @@ require("plugins.mini_files")
 require("plugins.mini_pick")
 require("plugins.mini_visits")
 require("plugins.mini_extra")
+require("plugins.mini_clue")
 
 -- code 
 require("plugins.mole")
