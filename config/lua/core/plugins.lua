@@ -15,8 +15,12 @@ require("plugins.mini_files")
 require("plugins.mini_pick")
 require("plugins.mini_extra")
 
+-- code 
+require("plugins.mole")
+
 -- ui
 require("plugins.ui")
+-- require("plugins.nui")
 require("plugins.bufferline")
 require("plugins.winbar")
 

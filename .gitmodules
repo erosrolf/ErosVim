@@ -88,3 +88,6 @@
 [submodule "config/pack/my-plugins/start/blame.nvim"]
 	path = config/pack/my-plugins/start/blame.nvim
 	url = https://github.com/FabijanZulj/blame.nvim
+[submodule "config/pack/my-plugins/start/mole.nvim"]
+	path = config/pack/my-plugins/start/mole.nvim
+	url = https://github.com/zion-off/mole.nvim

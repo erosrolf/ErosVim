@@ -2,7 +2,8 @@ local lspconfig = require("lspconfig")
 local util = require("lspconfig.util")
 local navic = require("nvim-navic")
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
-local fn = require("core.functions")
+local functions = require("core.functions")
+local formatter = require("core.formatter")
 
 local fallbackFlagsList = {
   "-std=c++11", -- лучше совпадать с тем, что реально в compile_commands (у тебя c++11)
@@ -19,8 +20,9 @@ local fallbackFlagsList = {
 local augroup = vim.api.nvim_create_augroup("LspFormatOnSave", { clear = false })
 
 local on_attach = function(client, bufnr)
-  -- winbar breadcrumbs
-  if client.server_capabilities.documentSymbolProvider then
+  -- winbar breadcrumbs: attach only once, only for selected servers
+  if (client.name == "clangd" or client.name == "jsonls")
+      and client.server_capabilities.documentSymbolProvider then
     navic.attach(client, bufnr)
   end
 
@@ -32,23 +34,15 @@ local on_attach = function(client, bufnr)
       group = augroup,
       buffer = bufnr,
       callback = function()
-        if vim.bo[bufnr].filetype == "json" then
-          fn.format_json_like_hook(bufnr)
-          return
-        end
-
-        vim.lsp.buf.format({
-          async = false,
-          filter = function(c)
-            return c.id == client.id
-          end,
-        })
+        formatter.format_buffer_on_save(bufnr, client)
       end,
     })
   end
 end
 
 lspconfig.clangd.setup({
+
+  filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "cc", "h" },
   -- ВАЖНО:
   -- 1) Не используем --extra-arg (Apple clangd их не знает)
   -- 2) Не используем --clang-tidy=false (такого флага нет). Просто не включаем clang-tidy.
@@ -71,12 +65,12 @@ lspconfig.clangd.setup({
 
   -- Подмешиваем compile_commands-dir, но НЕ ломаем cmd.
   on_new_config = function(new_config, _root_dir)
-    local cc_path = fn.get_clangd_compile_commands_path()
+    local cc_path = functions.get_clangd_compile_commands_path()
     if not cc_path or cc_path == "" then
       return
     end
 
-    local cc_dir = vim.fn.fnamemodify(cc_path, ":h")
+    local cc_dir = vim.functions.fnamemodify(cc_path, ":h")
 
     -- clangd setup мог дать cmd строкой (редко, но бывает) — нормализуем
     if type(new_config.cmd) == "string" then
@@ -113,4 +107,17 @@ lspconfig.clangd.setup({
 lspconfig.jsonls.setup({
   capabilities = capabilities,
   on_attach = on_attach,
+})
+
+lspconfig.buf_ls.setup({
+  cmd = { "buf", "lsp", "serve" },
+  filetypes = { "proto" },
+  root_dir = util.root_pattern("buf.work.yaml", "buf.yaml", ".git"),
+  capabilities = capabilities,
+
+  on_attach = function(client, bufnr)
+    client.server_capabilities.documentFormattingProvider = false
+    client.server_capabilities.documentRangeFormattingProvider = false
+    on_attach(client, bufnr)
+  end,
 })

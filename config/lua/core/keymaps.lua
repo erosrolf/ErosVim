@@ -15,7 +15,18 @@ vim.g.mapleader = " "
 
 local map       = vim.keymap.set
 local func      = require("core.functions")
-local extra = require("mini.extra")
+local extra     = require("mini.extra")
+local mole      = require("mole")
+local formatter = require("core.formatter")
+
+  -- ==========================================================
+  -- MOLE
+  -- ==========================================================
+  vim.keymap.set("v", "<leader>ma", mole.annotate, { desc = "Mole: annotate" })
+  vim.keymap.set("n", "<leader>ms", mole.start_session, { desc = "Mole: start session" })
+  vim.keymap.set("n", "<leader>mq", mole.stop_session, { desc = "Mole: stop session" })
+  vim.keymap.set("n", "<leader>mr", mole.resume_session, { desc = "Mole: resume session" })
+  vim.keymap.set("n", "<leader>mw", mole.toggle_window, { desc = "Mole: toggle panel" })
 
 local M = {
   -- ==========================================================
@@ -226,16 +237,18 @@ local M = {
   {
     "<leader>w",
     function()
-      local ft = vim.bo.filetype
+      local filetype = vim.bo.filetype
 
-      -- Если фокус в mini.files → синхронизация FS
-      if ft == "minifiles" then
+      if filetype == "minifiles" then
         require("mini.files").synchronize()
         return
       end
 
-      -- Обычное поведение
-      vim.lsp.buf.format({ async = false })
+      -- Форматируем текущий буфер "правильным" способом.
+      -- Для proto будет clang-format (как в pre-commit), для json твой hook,
+      -- для остального — LSP (если есть).
+      formatter.format_buffer_on_save(vim.api.nvim_get_current_buf(), nil)
+
       vim.cmd("write")
     end,
     "Format & Save / MiniFiles Sync"
