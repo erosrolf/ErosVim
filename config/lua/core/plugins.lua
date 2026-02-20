@@ -16,9 +16,12 @@ require("plugins.mini_pick")
 require("plugins.mini_visits")
 require("plugins.mini_extra")
 require("plugins.mini_clue")
+require("plugins.mini_diff")
 
 -- code 
 require("plugins.mole")
+require("plugins.develop_diff_signs")
+require("plugins.develop_diff_signs_setup")
 
 -- ui
 require("plugins.ui")
@@ -32,6 +35,7 @@ vim.cmd.colorscheme("eros-light")
 -- git
 require("plugins.gitsigns")
 require("plugins.diffview")
+require("plugins.diffview_autoclose")
 require("plugins.blame")
 
 require("plugins.git_ranges_jump").setup({

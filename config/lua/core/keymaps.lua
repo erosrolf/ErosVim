@@ -94,35 +94,15 @@ local M = {
       if view then
         vim.cmd("DiffviewClose")
       else
-        -- По умолчанию: diff относительно предыдущего коммита
-        vim.cmd("DiffviewOpen HEAD~1")
+        vim.cmd("DiffviewOpen develop...HEAD")
       end
     end,
-    "Toggle Git Diff (HEAD~1)"
+    "Diff vs develop"
   },
+  { "<leader>dis", function() func.diffsplit_file_from_develop({ base = "develop", vertical = true }) end, "Diffsplit vs develop" },
 
-  {
-    "<leader>diF",
-    function()
-      -- Берём последние 30 коммитов. Можно увеличить max-count.
-      local commits = vim.fn.systemlist("git log --oneline --max-count=30")
-      if not commits or #commits == 0 then
-        vim.notify("No git commits found (are you in a git repo?)", vim.log.levels.WARN)
-        return
-      end
-
-      vim.ui.select(commits, { prompt = "Diff against commit:" }, function(choice)
-        if not choice then return end
-        local sha = choice:match("^(%S+)")
-        if not sha then return end
-        vim.cmd("DiffviewOpen " .. sha)
-      end)
-    end,
-    "Diff: choose commit"
-  },
-
-  -- Твой быстрый popup diff hunk под курсором (через gitsigns hunks)
-  { "<leader>gd", func.preview_hunk_popup, "Show Git hunk under cursor" },
+  -- Быстрый popup diff hunk под курсором
+  { "<leader>gd", function() func.preview_hunk_smart({ base = "origin/develop" }) end, "Show Git hunk under cursor" },
   { "<leader>gu", function() require("gitsigns").reset_hunk() end, "Undo Git hunk" },
 
   -- ==========================================================
@@ -209,10 +189,29 @@ local M = {
   -- ==========================================================
   -- C/C++ (clangd)
   -- ==========================================================
-  {
-    "<leader>/",
-    "<cmd>ClangdSwitchSourceHeader<CR>",
-    "Switch header/source"
+  { "<leader>/",
+    function()
+      local clients = vim.lsp.get_clients({ bufnr = 0, name = "clangd" })
+      if #clients == 0 then
+        vim.notify("clangd не запущен для этого буфера", vim.log.levels.WARN)
+        return
+      end
+
+      local params = { uri = vim.uri_from_bufnr(0) }
+      vim.lsp.buf_request(0, "textDocument/switchSourceHeader", params, function(err, result)
+        if err then
+          vim.notify(err.message or tostring(err), vim.log.levels.ERROR)
+          return
+        end
+        if not result then
+          vim.notify("clangd не вернул парный файл", vim.log.levels.INFO)
+          return
+        end
+        vim.cmd("edit " .. vim.uri_to_fname(result))
+      end)
+    end,
+    "Switch header/source",
+    { "n" },
   },
 
   -- ==========================================================

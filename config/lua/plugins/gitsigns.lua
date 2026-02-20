@@ -1,17 +1,17 @@
-require("gitsigns").setup({
-  signs = {
-    add          = { text = "█" },
-    change       = { text = "█" },
-    delete       = { text = "█" },
-    topdelete    = { text = "█" },
-    changedelete = { text = "█" },
-    untracked    = { text = "█" },
-  },
-  on_attach = function(bufnr)
-    local gs = package.loaded.gitsigns
+local ok, gs = pcall(require, "gitsigns")
+if not ok then return end
 
-    local function map(mode, l, r, desc)
-      vim.keymap.set(mode, l, r, { buffer = bufnr, desc = desc })
-    end
-  end,
+gs.setup({
+  -- ВАЖНО: чтобы не конфликтовать с mini.diff и develop-layer
+  signcolumn = false,
+  numhl = false,
+  linehl = false,
+  word_diff = false,
+
+  -- оставляем полезное
+  current_line_blame = false,
+
+  preview_config = {
+    border = "rounded",
+  },
 })
