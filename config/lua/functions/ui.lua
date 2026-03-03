@@ -23,16 +23,34 @@ function M.show_diagnostics_list()
   vim.cmd("botright lopen | resize 15")
 end
 
+------ smart close buffer ------
 function M.smart_close_buffer()
   local modified = vim.bo.modified
   local bufs = #vim.fn.getbufinfo({ buflisted = 1 })
+  local curbuf = vim.api.nvim_get_current_buf()
 
   local function close(force)
-    local ok, aerial = pcall(require, "aerial")
-    if ok and aerial and aerial.is_open and aerial.is_open() then
+    -- Закрываем aerial, если открыт
+    local ok_aerial, aerial = pcall(require, "aerial")
+    if ok_aerial and aerial.is_open() then
       aerial.close()
     end
-    vim.cmd((bufs <= 1) and (force and "q!" or "confirm q") or (force and "bdelete!" or "bdelete"))
+
+    -- Если это последний listed-буфер — логично закрыть Neovim
+    if bufs <= 1 then
+      vim.cmd(force and "q!" or "confirm q")
+      return
+    end
+
+    -- Аккуратно удалить буфер, не ломая layout
+    local ok_br, bufremove = pcall(require, "mini.bufremove")
+    if ok_br then
+      bufremove.delete(curbuf, force)
+      return
+    end
+
+    -- Фоллбек, если mini.bufremove по какой-то причине недоступен
+    vim.cmd(force and "bdelete!" or "bdelete")
   end
 
   if not modified then
@@ -40,7 +58,9 @@ function M.smart_close_buffer()
     return
   end
 
-  vim.ui.select({ "Выйти без сохранения", "Сохранить и закрыть", "Отмена" }, { prompt = "Буфер изменён. Что сделать?" },
+  vim.ui.select(
+    { "Выйти без сохранения", "Сохранить и закрыть", "Отмена" },
+    { prompt = "Буфер изменён. Что сделать?" },
     function(choice)
       if choice == "Сохранить и закрыть" then
         vim.cmd("write")
@@ -48,7 +68,8 @@ function M.smart_close_buffer()
       elseif choice == "Выйти без сохранения" then
         close(true)
       end
-    end)
+    end
+  )
 end
 
 function M.preview_hunk_popup()

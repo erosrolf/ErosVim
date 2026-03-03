@@ -5,10 +5,12 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.termguicolors = true
 vim.opt.clipboard = "unnamedplus"
-vim.opt.swapfile = true
+vim.opt.swapfile = false
 vim.opt.undofile = true
 
-vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
+-- colorscheme
+vim.cmd.colorscheme("eros-light")
+
 vim.g.silent_swap_clean = true
 
 -- отключаем q:

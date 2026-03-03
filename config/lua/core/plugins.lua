@@ -29,9 +29,6 @@ require("plugins.ui")
 require("plugins.bufferline")
 require("plugins.winbar")
 
--- colorscheme
-vim.cmd.colorscheme("eros-light")
-
 -- git
 require("plugins.gitsigns")
 require("plugins.diffview")

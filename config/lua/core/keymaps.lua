@@ -38,13 +38,6 @@ local M = {
     "Code Action",
     { "n", "v" }
   },
-  {
-    "<leader>f",
-    function()
-      vim.lsp.buf.format({ async = true })
-    end,
-    "Format file"
-  },
 
   -- ==========================================================
   -- COMMANDS
@@ -115,6 +108,21 @@ local M = {
   },
   {"]r", function() require("illuminate").goto_next_reference(false) end, "Next ref" },
   {"[r", function() require("illuminate").goto_prev_reference(false) end, "Prev ref" },
+  { "]e", function()
+      vim.diagnostic.goto_next({
+        severity = vim.diagnostic.severity.ERROR,
+        wrap = true,
+        float = true,  -- поставь true если хочешь всплывашку при прыжке
+      })
+    end, "Next error" },
+
+  { "[e", function()
+      vim.diagnostic.goto_prev({
+        severity = vim.diagnostic.severity.ERROR,
+        wrap = true,
+        float = true,
+      })
+    end, "Prev error" },
 
   -- ==========================================================
   -- Gitsigns hunks
@@ -154,11 +162,41 @@ local M = {
     "Grep JSON (quickfix)",
   },
   {
+    "<leader>fp",
+    function()
+      local q = vim.fn.input("Grep Proto: ")
+      if q == "" then return end
+      vim.cmd("silent! grep! " ..
+        "-g'*.proto' " ..
+        vim.fn.shellescape(q)
+      )
+      vim.cmd("copen")
+    end,
+    "Grep JSON (quickfix)",
+  },
+  {
     "<leader>fo",
     function()
       require("mini.visits").select_path()
     end,
     "Recent files (visits)"
+  },
+  {
+    "<leader>hl",
+    function()
+      -- Получаем слово под курсором
+      local word = vim.fn.expand('<cword>')
+      if word ~= '' then
+        -- Устанавливаем паттерн поиска
+        vim.fn.setreg('/', '\\<' .. word .. '\\>')
+        -- Включаем подсветку
+        vim.o.hlsearch = true
+        -- Добавляем в историю
+        vim.fn.histadd('/', '\\<' .. word .. '\\>')
+        print('Searching for: ' .. word)
+      end  -- <-- здесь не хватало end
+    end,
+    'Highlight current word (no jump)'
   },
 
   -- ==========================================================
@@ -235,6 +273,12 @@ local M = {
   { "<leader>bx", "<cmd>bufdo bd<CR>", "Close all buffers" },
   { "<leader>bc", "<cmd>%bd|e#|bd#<CR>", "Close others buffers" },
   { "<leader>bo", func.open_buffer_in_finder, "Open buffer in Finder" },
+  { "<leader>bf", function() vim.lsp.buf.format({ async = true }) end, "Format file" },
+
+  -- ==========================================================
+  -- Sessions
+  -- ==========================================================
+  { "<leader>ss", func.sessions_menu, "Sessions: menu" },
 
   -- ==========================================================
   -- Save / Smart close

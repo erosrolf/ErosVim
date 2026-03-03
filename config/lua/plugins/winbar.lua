@@ -10,10 +10,18 @@ navic.setup({
   safe_output = true,
 })
 
--- показываем breadcrumbs в winbar
-vim.o.winbar = "%{%v:lua.require('nvim-navic').get_location()%}%="
+-- Кеш строки winbar
+vim.g.navic_cached = vim.g.navic_cached or ""
 
--- выключаем winbar там, где он мешает
+-- Локальная Lua-функция для winbar
+_G._navic_cached = function()
+  return vim.g.navic_cached or ""
+end
+
+-- Winbar читает кеш, а не вызывает navic.get_location()
+vim.opt.winbar = "%{%v:lua._navic_cached()%}%="
+
+-- Disable winbar for some filetypes
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "minifiles", "mini.files", "help", "qf", "Trouble", "NvimTree", "toggleterm" },
   callback = function()

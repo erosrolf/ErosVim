@@ -5,21 +5,16 @@ function M.setup(opts)
     cmd = {
       "clangd",
       "--background-index",
-      "--clang-tidy",
       "--completion-style=detailed",
-      "--header-insertion=iwyu",
-      "--header-insertion-decorators",
+      "--header-insertion=never",
       "--function-arg-placeholders",
       "--fallback-style=LLVM",
-    },
 
-    -- если когда-то будут проблемы с root:
-    -- root_markers = {
-    --   ".git",
-    --   "compile_commands.json",
-    --   "compile_flags.txt",
-    --   "CMakeLists.txt",
-    -- },
+      -- perf
+      "--pch-storage=memory",
+      "--limit-results=200",
+      "--limit-references=200",
+    }
 
   }, opts or {}))
 end
