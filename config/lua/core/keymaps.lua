@@ -205,15 +205,17 @@ local M = {
   {
     "<leader>e",
     function()
-      local path = vim.fn.expand("%:p")
-      local stat = vim.loop.fs_stat(path)
-      local dir = (stat and stat.type == "file")
-        and vim.fn.fnamemodify(path, ":h")
-        or vim.loop.cwd()
+      local buf_path = vim.api.nvim_buf_get_name(0)
 
-      require("mini.files").open(dir, true)
+      if buf_path == "" then
+        require("mini.files").open(vim.loop.cwd(), true)
+        return
+      end
+
+      -- открыть именно файл, а не только директорию
+      require("mini.files").open(buf_path, true)
     end,
-    "Mini Files"
+    "Mini Files (buffer dir)"
   },
 
 
