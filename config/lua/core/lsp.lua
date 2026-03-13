@@ -20,11 +20,9 @@ vim.diagnostic.config({
 })
 
 local function on_attach(client, bufnr)
-  if client.server_capabilities.inlayHintProvider then
-    pcall(function()
-      vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-    end)
-  end
+  pcall(function()
+    vim.lsp.inlay_hint.enable(false, { bufnr = bufnr })
+  end)
 end
 
 M.capabilities = capabilities

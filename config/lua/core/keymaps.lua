@@ -196,21 +196,21 @@ local M = {
   -- ==========================================================
   {
     "<leader>e",
-  function()
-    local path = vim.api.nvim_buf_get_name(0)
-    
-    -- Проверяем различные случаи
-    if path ~= "" and vim.fn.filereadable(path) == 1 then
-      -- Файл существует и читается
-      require("mini.files").open(vim.fn.fnamemodify(path, ":h"), true)
-    elseif path ~= "" and vim.fn.isdirectory(path) == 1 then
-      -- Это директория
-      require("mini.files").open(path, true)
-    else
-      -- Ничего подходящего нет, открываем cwd
-      require("mini.files").open(vim.uv.cwd(), true)
-    end
-  end,
+    function()
+      local mini_files = require("mini.files")
+      local cur_win = vim.api.nvim_get_current_win()
+      local path = vim.api.nvim_buf_get_name(0)
+
+      mini_files.set_target_window(cur_win)
+
+      if path ~= "" and vim.fn.filereadable(path) == 1 then
+        mini_files.open(path, false)
+      elseif path ~= "" and vim.fn.isdirectory(path) == 1 then
+        mini_files.open(path, false)
+      else
+        mini_files.open(vim.uv.cwd(), false)
+      end
+    end,
     "Mini Files"
   },
 
