@@ -18,35 +18,32 @@ vim.api.nvim_create_autocmd("CursorHold", {
 })
 
 --------------------------------------------------------------------
--- Navic winbar cache + (optional) clangd semantic tokens tweak
--- IMPORTANT: navic.attach() should be done ONLY in core/lsp.lua (on_attach)
+-- Attach navic on LSP attach
 --------------------------------------------------------------------
-vim.g.navic_cached = vim.g.navic_cached or ""
+local navic_group = vim.api.nvim_create_augroup("NavicAttach", { clear = true })
 
-local navic_group = vim.api.nvim_create_augroup("NavicWinbarCache", { clear = true })
-
-local function update_navic_cache()
-  local ok, navic = pcall(require, "nvim-navic")
-  if not ok or not navic.is_available() then
-    vim.g.navic_cached = ""
-    return
-  end
-
-  vim.g.navic_cached = navic.get_location()
-end
-
--- Debounce to avoid spamming on CursorMoved
-local _timer = vim.uv.new_timer()
-local function update_navic_cache_debounced()
-  _timer:stop()
-  _timer:start(60, 0, function()
-    vim.schedule(update_navic_cache)
-  end)
-end
-
-vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "BufEnter", "InsertLeave" }, {
+vim.api.nvim_create_autocmd("LspAttach", {
   group = navic_group,
-  callback = update_navic_cache_debounced,
+  callback = function(args)
+    local ok, navic = pcall(require, "nvim-navic")
+    if not ok then
+      return
+    end
+
+    local client = vim.lsp.get_client_by_id(args.data.client_id)
+    if not client then
+      return
+    end
+
+    if client.server_capabilities
+      and client.server_capabilities.documentSymbolProvider
+    then
+      navic.attach(client, args.buf)
+      vim.schedule(function()
+        vim.cmd("redrawstatus")
+      end)
+    end
+  end,
 })
 
 --------------------------------------------------------------------
@@ -65,14 +62,17 @@ vim.api.nvim_create_autocmd("BufWritePost", {
     if vim.loop.fs_stat(swappath) then
       vim.fn.delete(swappath)
       if not vim.g.silent_swap_clean then
-        vim.notify("Swap file removed", vim.log.levels.INFO, { title = "Swap Clean", timeout = 1000 })
+        vim.notify("Swap file removed", vim.log.levels.INFO, {
+          title = "Swap Clean",
+          timeout = 1000,
+        })
       end
     end
   end,
 })
 
 --------------------------------------------------------------------
--- Disable winbar for some filetypes (where it is annoying)
+-- Disable winbar for some filetypes
 --------------------------------------------------------------------
 vim.api.nvim_create_autocmd("FileType", {
   pattern = { "minifiles", "mini.files", "help", "qf", "Trouble", "NvimTree", "toggleterm" },
@@ -99,6 +99,27 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 
     if mark[1] > 0 and mark[1] <= line_count then
       pcall(vim.api.nvim_win_set_cursor, 0, mark)
+    end
+  end,
+})
+
+--------------------------------------------------------------------
+-- Refresh winbar when cursor moves
+--------------------------------------------------------------------
+local winbar_refresh = vim.api.nvim_create_augroup("WinbarRefresh", { clear = true })
+
+vim.api.nvim_create_autocmd({
+  "CursorMoved",
+  "CursorMovedI",
+  "BufEnter",
+  "WinEnter",
+  "InsertLeave",
+}, {
+  group = winbar_refresh,
+  callback = function()
+    local ok, navic = pcall(require, "nvim-navic")
+    if ok and navic.is_available() then
+      vim.api.nvim__redraw({ winbar = true, flush = true })
     end
   end,
 })

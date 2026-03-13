@@ -8,23 +8,20 @@ navic.setup({
   separator = " > ",
   depth_limit = 0,
   safe_output = true,
+  lazy_update_context = false,
 })
 
--- Кеш строки winbar
-vim.g.navic_cached = vim.g.navic_cached or ""
+_G.navic_winbar = function()
+  local ok2, navic2 = pcall(require, "nvim-navic")
+  if not ok2 then
+    return ""
+  end
 
--- Локальная Lua-функция для winbar
-_G._navic_cached = function()
-  return vim.g.navic_cached or ""
+  if not navic2.is_available() then
+    return ""
+  end
+
+  return navic2.get_location()
 end
 
--- Winbar читает кеш, а не вызывает navic.get_location()
-vim.opt.winbar = "%{%v:lua._navic_cached()%}%="
-
--- Disable winbar for some filetypes
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = { "minifiles", "mini.files", "help", "qf", "Trouble", "NvimTree", "toggleterm" },
-  callback = function()
-    vim.opt_local.winbar = ""
-  end,
-})
+vim.o.winbar = "%{%v:lua.navic_winbar()%}"

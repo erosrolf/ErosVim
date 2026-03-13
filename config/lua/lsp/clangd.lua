@@ -1,3 +1,5 @@
+local lsp = require("core.lsp")
+
 local M = {}
 
 function M.setup(opts)
@@ -9,13 +11,13 @@ function M.setup(opts)
       "--header-insertion=never",
       "--function-arg-placeholders",
       "--fallback-style=LLVM",
-
-      -- perf
       "--pch-storage=memory",
       "--limit-results=200",
       "--limit-references=200",
-    }
-
+    },
+    filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
+    capabilities = lsp.capabilities,
+    on_attach = lsp.on_attach,
   }, opts or {}))
 end
 

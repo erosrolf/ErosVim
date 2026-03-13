@@ -1,39 +1,33 @@
 local M = {}
 
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+
+local ok_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+if ok_cmp then
+  capabilities = cmp_nvim_lsp.default_capabilities(capabilities)
+end
+
 vim.diagnostic.config({
-  update_in_insert = false,
   severity_sort = true,
+  float = {
+    border = "rounded",
+    source = "always",
+  },
+  signs = true,
+  underline = true,
+  update_in_insert = false,
+  virtual_text = false,
 })
 
-M.capabilities = vim.lsp.protocol.make_client_capabilities()
-do
-  local ok, cmp_lsp = pcall(require, "cmp_nvim_lsp")
-  if ok then
-    M.capabilities = cmp_lsp.default_capabilities(M.capabilities)
-  end
-  M.capabilities.offsetEncoding = { "utf-16" }
-end
-
-function M.on_attach(client, bufnr)
-  if vim.lsp.inlay_hint and client.supports_method("textDocument/inlayHint") then
-    vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
-  end
-
-  local ok, navic = pcall(require, "nvim-navic")
-  if ok and client.server_capabilities and client.server_capabilities.documentSymbolProvider then
-    navic.attach(client, bufnr)
+local function on_attach(client, bufnr)
+  if client.server_capabilities.inlayHintProvider then
+    pcall(function()
+      vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+    end)
   end
 end
 
-function M.root_pattern(...)
-  local markers = { ... }
-  return function(bufnr)
-    local fname = vim.api.nvim_buf_get_name(bufnr)
-    if fname == "" then
-      return vim.uv.cwd()
-    end
-    return vim.fs.root(fname, markers) or vim.uv.cwd()
-  end
-end
+M.capabilities = capabilities
+M.on_attach = on_attach
 
 return M
