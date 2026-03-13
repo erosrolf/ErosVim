@@ -95,7 +95,7 @@ local M = {
   { "<leader>dis", function() func.diffsplit_file_from_develop({ base = "develop", vertical = true }) end, "Diffsplit vs develop" },
 
   -- Быстрый popup diff hunk под курсором
-  { "<leader>gd", function() func.preview_hunk_smart({ base = "origin/develop" }) end, "Show Git hunk under cursor" },
+  { "<leader>gd", function() func.preview_hunk_smart({ base = "develop" }) end, "Show Git hunk under cursor" },
   { "<leader>gu", function() require("gitsigns").reset_hunk() end, "Undo Git hunk" },
 
   -- ==========================================================
@@ -106,23 +106,15 @@ local M = {
     func.goto_menu,
     "Go to (definition, ref, ...)"
   },
-  {"]r", function() require("illuminate").goto_next_reference(false) end, "Next ref" },
-  {"[r", function() require("illuminate").goto_prev_reference(false) end, "Prev ref" },
-  { "]e", function()
-      vim.diagnostic.goto_next({
-        severity = vim.diagnostic.severity.ERROR,
-        wrap = true,
-        float = true,  -- поставь true если хочешь всплывашку при прыжке
-      })
-    end, "Next error" },
 
-  { "[e", function()
-      vim.diagnostic.goto_prev({
-        severity = vim.diagnostic.severity.ERROR,
-        wrap = true,
-        float = true,
-      })
-    end, "Prev error" },
+  { "]r", function() require("illuminate").goto_next_reference(false) end, "Next ref" },
+  { "[r", function() require("illuminate").goto_prev_reference(false) end, "Prev ref" },
+  { "]h", function() require("gitsigns").next_hunk() end, "Next hunk" },
+  { "[h", function() require("gitsigns").prev_hunk() end, "Prev hunk" },
+  { "]d", function() vim.diagnostic.goto_next() end, "Next diagnostic" },
+  { "[d", function() vim.diagnostic.goto_prev() end, "Prev diagnostic" },
+  { "]e", function() vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR, wrap = true, float = true }) end, "Next error" },
+  { "[e", function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR, wrap = true, float = true }) end, "Prev error" },
 
   -- ==========================================================
   -- Gitsigns hunks
@@ -141,7 +133,7 @@ local M = {
       local q = vim.fn.input("Grep C/C++: ")
       if q == "" then return end
       vim.cmd("silent! grep! " ..
-        "-g'*.cc' -g'*.h' -g'*.cpp' -g'*.hpp' -g'*.proto' " ..
+        "-g'*.cc' -g'*.h' -g'*.cpp' -g'*.hpp' -g'!ext-libs' " ..
         vim.fn.shellescape(q)
       )
       vim.cmd("copen")
@@ -172,7 +164,7 @@ local M = {
       )
       vim.cmd("copen")
     end,
-    "Grep JSON (quickfix)",
+    "Grep Proto (quickfix)",
   },
   {
     "<leader>fo",
@@ -204,18 +196,22 @@ local M = {
   -- ==========================================================
   {
     "<leader>e",
-    function()
-      local buf_path = vim.api.nvim_buf_get_name(0)
-
-      if buf_path == "" then
-        require("mini.files").open(vim.loop.cwd(), true)
-        return
-      end
-
-      -- открыть именно файл, а не только директорию
-      require("mini.files").open(buf_path, true)
-    end,
-    "Mini Files (buffer dir)"
+  function()
+    local path = vim.api.nvim_buf_get_name(0)
+    
+    -- Проверяем различные случаи
+    if path ~= "" and vim.fn.filereadable(path) == 1 then
+      -- Файл существует и читается
+      require("mini.files").open(vim.fn.fnamemodify(path, ":h"), true)
+    elseif path ~= "" and vim.fn.isdirectory(path) == 1 then
+      -- Это директория
+      require("mini.files").open(path, true)
+    else
+      -- Ничего подходящего нет, открываем cwd
+      require("mini.files").open(vim.uv.cwd(), true)
+    end
+  end,
+    "Mini Files"
   },
 
 
@@ -277,10 +273,6 @@ local M = {
   { "<leader>bo", func.open_buffer_in_finder, "Open buffer in Finder" },
   { "<leader>bf", function() vim.lsp.buf.format({ async = true }) end, "Format file" },
 
-  -- ==========================================================
-  -- Sessions
-  -- ==========================================================
-  { "<leader>ss", func.sessions_menu, "Sessions: menu" },
 
   -- ==========================================================
   -- Save / Smart close
@@ -310,6 +302,18 @@ local M = {
     "Smart close"
   },
 }
+
+
+
+-- ============================================================
+-- Диагностика
+-- ============================================================
+for i, m in ipairs(M) do
+  local lhs, rhs, desc = m[1], m[2], m[3]
+  if rhs == nil then
+    error(("keymap rhs is nil: index=%d lhs=%s desc=%s"):format(i, tostring(lhs), tostring(desc)))
+  end
+end
 
 -- ============================================================
 -- Применение хоткеев

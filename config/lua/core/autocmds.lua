@@ -44,25 +44,6 @@ local function update_navic_cache_debounced()
   end)
 end
 
-vim.api.nvim_create_autocmd("LspAttach", {
-  group = navic_group,
-  callback = function(args)
-    local client = vim.lsp.get_client_by_id(args.data.client_id)
-    if not client then return end
-
-    -- Optional: speed up huge C++ TU by disabling semantic tokens only for huge files
-    if client.name == "clangd" then
-      local line_count = vim.api.nvim_buf_line_count(args.buf)
-      if line_count > 5000 then
-        client.server_capabilities.semanticTokensProvider = nil
-      end
-    end
-
-    -- DO NOT navic.attach() here (avoid duplication). It's in core/lsp.lua:on_attach.
-    update_navic_cache_debounced()
-  end,
-})
-
 vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "BufEnter", "InsertLeave" }, {
   group = navic_group,
   callback = update_navic_cache_debounced,

@@ -18,7 +18,6 @@ local modules = {
   "functions.git",
   "functions.build",
   "functions.open_in_finder",
-  "functions.sessions",
 }
 
 local did_setup = vim.g.__core_functions_setups_done

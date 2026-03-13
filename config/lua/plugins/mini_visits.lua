@@ -11,7 +11,12 @@ visits.setup(
     filter = nil,
 
     -- Sort paths based on the visit data (robust frecency by default)
-    sort = nil,
+    sort = function(arr)
+      table.sort(arr, function(a, b)
+        return (a.latest or 0) > (b.latest or 0)
+      end)
+      return arr
+    end,
   },
 
   -- Whether to disable showing non-error feedback
