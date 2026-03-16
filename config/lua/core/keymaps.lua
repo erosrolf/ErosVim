@@ -92,11 +92,13 @@ local M = {
     end,
     "Diff vs develop"
   },
-  { "<leader>dis", function() func.diffsplit_file_from_develop({ base = "develop", vertical = true }) end, "Diffsplit vs develop" },
 
+  { "<leader>dis", function() func.diffsplit_file_from_develop({ base = "develop", vertical = true }) end, "Diffsplit vs develop" },
   -- Быстрый popup diff hunk под курсором
   { "<leader>gd", function() func.preview_hunk_smart({ base = "develop" }) end, "Show Git hunk under cursor" },
-  { "<leader>gu", function() require("gitsigns").reset_hunk() end, "Undo Git hunk" },
+  { "<leader>gd", function() func.preview_hunk_smart({ base = "develop" }) end, "Show Git hunk under cursor" },
+  -- Git blame
+  { "<leader>gb", "<cmd>BlameToggle<CR>", "Git Blame toggle file" },
 
   -- ==========================================================
   -- Go to... menu (твоя удобная менюшка)
@@ -107,21 +109,19 @@ local M = {
     "Go to (definition, ref, ...)"
   },
 
+  { "[h", function() MiniDiff.goto_hunk("prev") end, "Prev hunk" },
+  { "]h", function() MiniDiff.goto_hunk("next") end, "Next hunk" },
+
+  { "[H", function() require("plugins.git_branch_ranges").prev_range() end, "Prev branch range" },
+  { "]H", function() require("plugins.git_branch_ranges").next_range() end, "Next branch range" },
+  { "<leader>grf", "<cmd>BranchRangesFocus<CR>", "Focus branch ranges" },
+
   { "]r", function() require("illuminate").goto_next_reference(false) end, "Next ref" },
   { "[r", function() require("illuminate").goto_prev_reference(false) end, "Prev ref" },
-  { "]h", function() require("gitsigns").next_hunk() end, "Next hunk" },
-  { "[h", function() require("gitsigns").prev_hunk() end, "Prev hunk" },
   { "]d", function() vim.diagnostic.goto_next() end, "Next diagnostic" },
   { "[d", function() vim.diagnostic.goto_prev() end, "Prev diagnostic" },
   { "]e", function() vim.diagnostic.goto_next({ severity = vim.diagnostic.severity.ERROR, wrap = true, float = true }) end, "Next error" },
   { "[e", function() vim.diagnostic.goto_prev({ severity = vim.diagnostic.severity.ERROR, wrap = true, float = true }) end, "Prev error" },
-
-  -- ==========================================================
-  -- Gitsigns hunks
-  -- ==========================================================
-  { "<leader>gp", function() require("gitsigns").preview_hunk() end, "Preview hunk" },
-  { "<leader>gr", function() require("gitsigns").reset_hunk() end, "Reset hunk" },
-  { "<leader>gb", "<cmd>BlameToggle<CR>", "Git Blame toggle file" },
 
   -- ==========================================================
   -- Finders

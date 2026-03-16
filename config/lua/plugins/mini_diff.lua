@@ -27,23 +27,15 @@ diff.setup(
     text_change = 200,
   },
 
-  -- Module mappings. Use `''` (empty string) to disable one.
+  -- Mappings in core/keymps.lua
   mappings = {
-    -- Apply hunks inside a visual/operator region
-    apply = 'gh',
-
-    -- Reset hunks inside a visual/operator region
-    reset = 'gH',
-
-    -- Hunk range textobject to be used inside operator
-    -- Works also in Visual mode if mapping differs from apply and reset
-    textobject = 'gh',
-
-    -- Go to hunk range in corresponding direction
-    goto_first = '[H',
-    goto_prev = '[h',
-    goto_next = ']h',
-    goto_last = ']H',
+    apply = '',
+    reset = '',
+    textobject = '',
+    goto_first = '',
+    goto_prev = '',
+    goto_next = '',
+    goto_last = '',
   },
 
   -- Various options
