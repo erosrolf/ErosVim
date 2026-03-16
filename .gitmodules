@@ -28,9 +28,6 @@
 [submodule "config/pack/my-plugins/start/bufferline.nvim"]
 	path = config/pack/my-plugins/start/bufferline.nvim
 	url = https://github.com/akinsho/bufferline.nvim
-[submodule "config/pack/my-plugins/start/gitsigns.nvim"]
-	path = config/pack/my-plugins/start/gitsigns.nvim
-	url = https://github.com/lewis6991/gitsigns.nvim
 [submodule "config/pack/my-plugins/start/lsp_signature.nvim"]
 	path = config/pack/my-plugins/start/lsp_signature.nvim
 	url = https://github.com/ray-x/lsp_signature.nvim
